@@ -7,17 +7,23 @@ library(shinythemes)
 
 #UI
 shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
+                   
+                   #Introduction Panel
                    tabPanel("Introduction",
                             titlePanel("Introduction to AR2 Assay"),
                     sidebarLayout(
                     sidebarPanel("Description"),
                     mainPanel())),
                    
+                   
+                   #Data Exploration Panel
                    tabPanel("Data Exploration",
                             titlePanel("Exploring Study Data"),
                      sidebarLayout(
                      sidebarPanel(
-                     selectInput(
+                       
+                     checkboxInput("chemCheck", "Filter by Chemical?", value = FALSE),
+                     conditionalPanel(condition = "input.chemCheck == 1", selectInput(
                        "chemList",
                        "Select Chemical: ",
                        choices = c("17-Methyltestosterone", "17alpha-Estradiol", "17alpha-Ethinylestradiol","17beta-Estradiol", "17beta-Trenbolone",
@@ -36,19 +42,28 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                        "Octamethylcyclotetrasiloxane","Octylbicycloheptenedicarboximide","Oxamyl","Pentachloronitrobenzene","Pentachlorophenol","Permethrin",
                        "Phenothrin","Phosmet","Prochloraz","Procymidone","Propargite","Propiconazole","Propyzamide","Raloxifene hydrochloride","Simazine",
                        "Spironolactone","Tamoxifen","Tebuconazole","Testosterone propionate","Tetramethrin","Triadimefon","Tributylchlorostannane",
-                       "Trifluralin","Vinclozolin","Z-Tetrachlorvinphos" ,"Zearalenone","o,p'-DDT","p,p'-DDD","p,p'-DDE","p-Dichlorobenzene")),
-                     selectInput(
-                       "cypList",
-                       "Select Biogroup: ",
+                       "Trifluralin","Vinclozolin","Z-Tetrachlorvinphos" ,"Zearalenone","o,p'-DDT","p,p'-DDD","p,p'-DDE","p-Dichlorobenzene"))),
+                     
+                     checkboxInput("cypCheck", "Filter by Biogroup?", value = FALSE),
+                     conditionalPanel(condition = "input.cypCheck == 1", selectInput("cypList","Select Biogroup: ",
                        choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"))),
+                     
+                     checkboxInput("fullDataCheck", "Display Full Data Set?", value = FALSE)),
+                     
                      mainPanel(dataTableOutput("filteredData")))),
         
+                   
+                   
+                   #Data Visualization Panel
                    tabPanel("Data Visualization",
                             titlePanel("AR Antagonist Plots"),
                             sidebarLayout(
                               sidebarPanel("Description"),
                               mainPanel())),
                    
+                   
+                   
+                   #Modeling Panel
                    tabPanel("Modeling",
                             titlePanel("Chemotype Modeling for AR2 Assay Hits"),
                       sidebarLayout(

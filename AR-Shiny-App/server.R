@@ -100,9 +100,23 @@ AR2study_complete = cmpd1[assay == "AR",]
 shinyServer(function(input, output) {
 
     output$filteredData <- renderDataTable({
-         filtered <- AR2study_complete %>% filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
-         filtered2 <- filtered %>% select(2,7,13,10,5:9,11:12,14:19)
-         filtered2
+         if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 0){sample1 <- AR2study_complete %>% select(2,7,13,10,5:9,11:12,14:19)
+                                                                                     sample1}
+    else if(input$fullDataCheck == 0 && input$chemCheck == 1 && input$cypCheck == 0){filtered <- AR2study_complete %>% filter(chnm == input$chemList)
+                                                                                     filtered2 <- filtered %>% select(2,7,13,10,5:9,11:12,14:19)
+                                                                                     filtered2}
+    else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 0){AR2study_complete}
+    else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 0){filtered <- AR2study_complete %>% filter(chnm == input$chemList)
+                                                                                     filtered}
+    else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp <- AR2study_complete %>% filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
+                                                                                     filteredCyp}
+    else if(input$fullDataCheck == 0 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp2 <- AR2study_complete %>% filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
+                                                                                     filteredCyp2 <- filteredCyp2 %>% select(2,7,13,10,5:9,11:12,14:19)
+                                                                                     filteredCyp2}
+    else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 1){fullCypFilter <- AR2study_complete %>% filter(biogroup == input$cypList)
+                                                                                     fullCypFilter}
+    else if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 1){cypFinal <- AR2study_complete %>% filter(biogroup == input$cypList) %>% select(2,7,13,10,5:9,11:12,14:19)
+                                                                                     cypFinal}
     })
 
 })
