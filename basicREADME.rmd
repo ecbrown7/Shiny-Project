@@ -1,0 +1,40 @@
+---
+title: 'README'
+author: 'Evan Brown'
+date: '7/27/2022'
+output: 
+  github_document:
+    toc: true
+    html_preview: false
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(fig.path = "README_files/figure-gfm")
+```
+
+### Brief description of the app and its purpose.  
+ 
+This Shiny app does something. 
+
+### A list of packages needed to run the app.  
+
+```{r, eval=FALSE}
+data.table
+tidyverse
+shiny
+```
+
+### A line of code that would install all the packages used.  
+
+```{r, eval= FALSE}
+install.packages("data.table", "tidyverse", "shiny")
+library(data.table)
+library(tidyverse)
+library(shiny)
+```
+
+### Run the app.
+
+```{r, eval = FALSE}
+shiny::runGitHub(repo="Shiny-Project",username = "ecbrown7",ref = "main",subdir = "shinyfiles")
+```

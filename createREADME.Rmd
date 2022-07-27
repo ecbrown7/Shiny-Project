@@ -1,0 +1,18 @@
+#author: "Evan Brown"
+#date: "7/27/2022"
+#purpose: Render README file.
+
+
+rmarkdown::render(
+  input="basicREADME.Rmd",
+  output_format = "github_document",
+  output_file = "README.md",
+  runtime = "static",
+  clean = TRUE,
+  params = NULL,
+  knit_meta = NULL,
+  envir = parent.frame(),
+  run_pandoc = TRUE,
+  quiet = FALSE,
+  encoding = "UTF-8"
+)
