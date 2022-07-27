@@ -1,33 +1,29 @@
-#
 # This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 
+library(tidyverse)
+library(data.table)
 library(shiny)
+library(shinythemes)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
-        )
-    )
+#UI
+shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
+                   tabPanel("Introduction",
+                            titlePanel("Introduction to AR2 Assay"),
+                    sidebarLayout(
+                    sidebarPanel("Description"),
+                    mainPanel())),
+                   
+                   tabPanel("Data Visualization",
+                            titlePanel("AR2 Antagonist Plots"),
+                     sidebarLayout(
+                     sidebarPanel("Description"),
+                     mainPanel())),
+        
+                   tabPanel("Modeling",
+                            titlePanel("Chemotype Modeling for AR2 Assay Hits"),
+                      sidebarLayout(
+                      sidebarPanel("Description"),
+                      mainPanel()))
 ))
+
+

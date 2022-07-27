@@ -21,6 +21,7 @@ This Shiny app does something.
 data.table
 tidyverse
 shiny
+shinythemes
 ```
 
 ### A line of code that would install all the packages used.
@@ -35,5 +36,5 @@ library(shiny)
 ### Run the app.
 
 ``` r
-shiny::runGitHub(repo="Shiny-Project",username = "ecbrown7",ref = "main",subdir = "shinyfiles")
+shiny::runGitHub(repo="Shiny-Project",username = "ecbrown7",ref = "main",subdir = "AR-Shiny-App")
 ```
