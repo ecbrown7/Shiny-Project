@@ -92,12 +92,10 @@ source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profi
 hill_curve = function(hill_tp, hill_ga, hill_gw, lconc){
     return(hill_tp/(1+10^((hill_ga - lconc)*hill_gw)))}
 
-##########
 #Sample data is a data frame with 5 chemicals. Change to data table, then loop over chemical name through tcplFit
 #tcplFit needs something called bmad, but it doesn't impact the results, 
 #but can limit the number of curves attempted to be fit, so set smaller than you think it really is
 bmad = .001
-##########
 
 #Set dataset to plot with without overriding AR2study_complete
 AR2plotting <- AR2study_complete
@@ -105,6 +103,28 @@ AR2plotting$biogroup <- factor(AR2plotting$biogroup, levels = c("noRNA","Bgal","
 
 AR2plotting$spid = AR2plotting$biogroup
 AR2plotting$resp = AR2plotting$nval
+
+
+
+###############
+#For modeling and hit calls
+###############
+
+#read in chemotypes
+chemotypes = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+colnames(chemotypes)[1] = "Chemical"
+
+
+
+studyDMSO = study[chnm == "DMSO" & assay == "AR"]
+ARmad = mad(studyDMSO$nval)
+hits = AR2plotting[nval >= 13*ARmad]
+uniqueHits = data.table(unique(hits$chnm))
+
+
+
+
+
 
 
 
@@ -169,17 +189,26 @@ shinyServer(function(input, output) {
         #Create cyp color palette with grey controls
         #Bgal, 1A2, 2A6, 2B6, 2C19, 2C8, 2C9, 2D6, 2E1, 2J2, 3A4, norna
         cyp.palette <- c("#808080", "#525252", "#FFBF00", "#DE3163",
-                         "#008000", "#DF180F", "#6495ED", "#E67E22", 
+                         "#008000", "#DCC715", "#6495ED", "#E67E22", 
                          "#008080", "#0000FF", "#000080", "#800080", "#15DAA1")
         
-        curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color = factor(spid, levels = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4")))) +
+        groups = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4")
+        
+        user.selected.biogroups = input$biogroup
+        
+        userPalette = cyp.palette[match(user.selected.biogroups, groups)]
+        
+        
+        
+        
+        curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color=spid)) +
             theme_bw() +
             geom_point(size = 1.5) + 
             coord_cartesian(ylim=c(-25,125)) +
             ylab("% AR Inhibtion") +
             xlab("[cmpd] log(uM)") +
             ggtitle(dat_evan$chnm) +
-            scale_colour_manual(values=cyp.palette, name = "Biogroup") +
+            scale_colour_manual(values=userPalette, name = "Biogroup") +
             theme(axis.text.x = element_text(size=14),
                   axis.text.y = element_text(size=14),
                   axis.title = element_text(size=16))
@@ -194,7 +223,7 @@ shinyServer(function(input, output) {
                 stat_function(fun = hill_curve, args=list(hill_tp = chemical_fit_hill_tp, 
                                                           hill_ga = chemical_fit_hill_ga, 
                                                           hill_gw = chemical_fit_hill_gw),
-                              color = cyp.palette[k], 
+                              color = userPalette[k], 
                               size=1) 
             k = k + 1L
         }
