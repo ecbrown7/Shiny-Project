@@ -58,7 +58,7 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                    tabPanel("Data Visualization",
                             titlePanel("AR Antagonist Plots"),
                             sidebarLayout(
-                              sidebarPanel("Description",
+                              sidebarPanel(strong("Display Options"),
                                             
                                 selectInput("chemName","Select Chemical: ",
                                 choices = c("17-Methyltestosterone", "17alpha-Estradiol", "17alpha-Ethinylestradiol","17beta-Estradiol", "17beta-Trenbolone",
@@ -79,8 +79,8 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                     "Spironolactone","Tamoxifen","Tebuconazole","Testosterone propionate","Tetramethrin","Triadimefon","Tributylchlorostannane",
                                     "Trifluralin","Vinclozolin","Z-Tetrachlorvinphos" ,"Zearalenone","o,p'-DDT","p,p'-DDD","p,p'-DDE","p-Dichlorobenzene")),
                               
-                               selectInput("biogroup","Select Biogroup: ",
-                                        choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"))),
+                               checkboxGroupInput("biogroup","Select Biogroup: ",
+                                        choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"), selected = c("noRNA", "Bgal"))),
                             
                               mainPanel(plotOutput("plot")))),
                    

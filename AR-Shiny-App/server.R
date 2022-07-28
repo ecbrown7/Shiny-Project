@@ -101,6 +101,7 @@ bmad = .001
 
 #Set dataset to plot with without overriding AR2study_complete
 AR2plotting <- AR2study_complete
+AR2plotting$biogroup <- factor(AR2plotting$biogroup, levels = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"))
 
 AR2plotting$spid = AR2plotting$biogroup
 AR2plotting$resp = AR2plotting$nval
@@ -139,7 +140,7 @@ shinyServer(function(input, output) {
         chemtitle.test = input$chemName
         biogroup.test = input$biogroup
         
-        sub.dt = AR2plotting[chnm == chemtitle.test & biogroup == biogroup.test,]
+        sub.dt = AR2plotting[chnm == chemtitle.test & biogroup %in% biogroup.test,]
         
         dat_evan = sub.dt
         setkey(dat_evan, spid)
@@ -165,17 +166,23 @@ shinyServer(function(input, output) {
             dat_hill[spid == chem, hill_gw := hill_wgw]
         }
         
-        # The palette with black:
-        cbbPalette = c("#000000", "#0000ff", "#888888")#rainbow(6)[1:5]) 
+        #Create cyp color palette with grey controls
+        #Bgal, 1A2, 2A6, 2B6, 2C19, 2C8, 2C9, 2D6, 2E1, 2J2, 3A4, norna
+        cyp.palette <- c("#808080", "#525252", "#FFBF00", "#DE3163",
+                         "#008000", "#DF180F", "#6495ED", "#E67E22", 
+                         "#008080", "#0000FF", "#000080", "#800080", "#15DAA1")
         
-        curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color = spid)) +
+        curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color = factor(spid, levels = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4")))) +
             theme_bw() +
             geom_point(size = 1.5) + 
             coord_cartesian(ylim=c(-25,125)) +
             ylab("% AR Inhibtion") +
-            xlab("[cmpd] (log uM)") +
+            xlab("[cmpd] log(uM)") +
             ggtitle(dat_evan$chnm) +
-            scale_colour_manual(values=cbbPalette, name = "Biogroup") 
+            scale_colour_manual(values=cyp.palette, name = "Biogroup") +
+            theme(axis.text.x = element_text(size=14),
+                  axis.text.y = element_text(size=14),
+                  axis.title = element_text(size=16))
         
         #plot the fitted curves, color by spid. This code may need to be modified if you have more colors than in cbbPalette
         k = 1L
@@ -187,15 +194,17 @@ shinyServer(function(input, output) {
                 stat_function(fun = hill_curve, args=list(hill_tp = chemical_fit_hill_tp, 
                                                           hill_ga = chemical_fit_hill_ga, 
                                                           hill_gw = chemical_fit_hill_gw),
-                              color = cbbPalette[k], 
+                              color = cyp.palette[k], 
                               size=1) 
             k = k + 1L
         }
         
         curves_plot   
         
-    })
+    }, width = 1100, height = 700)
 })
+
+
 
 
 
