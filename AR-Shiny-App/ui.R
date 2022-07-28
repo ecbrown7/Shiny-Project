@@ -58,8 +58,7 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                    tabPanel("Data Visualization",
                             titlePanel("AR Antagonist Plots"),
                             sidebarLayout(
-                              sidebarPanel(strong("Display Options"),
-                                            
+                              sidebarPanel(
                                 selectInput("chemName","Select Chemical: ",
                                 choices = c("17-Methyltestosterone", "17alpha-Estradiol", "17alpha-Ethinylestradiol","17beta-Estradiol", "17beta-Trenbolone",
                                     "2,2',4,4'-Tetrahydroxybenzophenone","2,4-Dihydroxybenzophenone","2,4-Dinitrophenol","2-Ethylhexylparaben","4,4'-Sulfonyldiphenol",

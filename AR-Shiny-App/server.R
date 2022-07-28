@@ -118,7 +118,7 @@ colnames(chemotypes)[1] = "Chemical"
 
 studyDMSO = study[chnm == "DMSO" & assay == "AR"]
 ARmad = mad(studyDMSO$nval)
-hits = AR2plotting[nval >= 13*ARmad]
+hits = AR2plotting[nval >= 5*ARmad]
 uniqueHits = data.table(unique(hits$chnm))
 
 
@@ -187,20 +187,16 @@ shinyServer(function(input, output) {
         }
         
         #Create cyp color palette with grey controls
-        #Bgal, 1A2, 2A6, 2B6, 2C19, 2C8, 2C9, 2D6, 2E1, 2J2, 3A4, norna
+        #Make them responsive to user input, but retain same ordering always
         cyp.palette <- c("#808080", "#525252", "#FFBF00", "#DE3163",
                          "#008000", "#DCC715", "#6495ED", "#E67E22", 
                          "#008080", "#0000FF", "#000080", "#800080", "#15DAA1")
-        
         groups = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4")
-        
         user.selected.biogroups = input$biogroup
-        
         userPalette = cyp.palette[match(user.selected.biogroups, groups)]
         
         
-        
-        
+        #Make AR Antagonist plots
         curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color=spid)) +
             theme_bw() +
             geom_point(size = 1.5) + 
@@ -211,7 +207,10 @@ shinyServer(function(input, output) {
             scale_colour_manual(values=userPalette, name = "Biogroup") +
             theme(axis.text.x = element_text(size=14),
                   axis.text.y = element_text(size=14),
-                  axis.title = element_text(size=16))
+                  axis.title = element_text(size=16),
+                  legend.text = element_text(size=14),
+                  legend.title = element_text(size=16, face = "bold"),
+                  title = element_text(size=16, face = "bold"))
         
         #plot the fitted curves, color by spid. This code may need to be modified if you have more colors than in cbbPalette
         k = 1L
