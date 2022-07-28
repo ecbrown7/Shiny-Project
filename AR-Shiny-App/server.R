@@ -77,6 +77,15 @@ study$pval2 = pval2.table$V1[match(study$apid, bval.table$apid)]
 
 study[, nval := ifelse(assay == "AR", (RLU - bval)/(pval1-bval)*100, (RLU - bval)/(pval2-bval)*100)]
 setkey(study, chnm)
+
+########For hit calls - #gives the global, zero-centered (median = 0) mad for DMSO
+bmad1 = study[assay == "AR" & chnm == "DMSO", mad(nval)] 
+threshold = 6*bmad1
+med.resp.by.chnm.dose.biogroup = study[assay == "AR" & chnm != "DMSO", .(med.resp = median(nval)), by = .(chnm, logc, biogroup)]
+hits.all.logc.and.biogroups = med.resp.by.chnm.dose.biogroup[med.resp > threshold,]
+unique.hits.antagonist = data.table(unique(hits.all.logc.and.biogroups$chnm))
+########
+
 cmpd1 = study[!is.na(logc),]
 #Finalized data set
 AR2study_complete = cmpd1[assay == "AR",]
@@ -106,9 +115,7 @@ AR2plotting$resp = AR2plotting$nval
 
 
 
-###############
-#For modeling and hit calls
-###############
+##########For modeling and hit calls
 
 #read in chemotypes
 chemotypes = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
@@ -116,14 +123,8 @@ colnames(chemotypes)[1] = "Chemical"
 
 
 
-studyDMSO = study[chnm == "DMSO" & assay == "AR"]
-ARmad = mad(studyDMSO$nval)
-hits = AR2plotting[nval >= 5*ARmad]
-uniqueHits = data.table(unique(hits$chnm))
 
-
-
-
+###########
 
 
 
@@ -212,7 +213,7 @@ shinyServer(function(input, output) {
                   legend.title = element_text(size=16, face = "bold"),
                   title = element_text(size=16, face = "bold"))
         
-        #plot the fitted curves, color by spid. This code may need to be modified if you have more colors than in cbbPalette
+        #plot the fitted curves, color by spid
         k = 1L
         for(chem in dat_hill[,spid]){
             chemical_fit_hill_tp = dat_hill[spid == chem, hill_tp]
@@ -227,12 +228,13 @@ shinyServer(function(input, output) {
             k = k + 1L
         }
         
-        curves_plot   
+        if(input$chemName %in% unique.hits.antagonist$V1){curves_plot_hit <- curves_plot + geom_hline(yintercept=40, color="red", size=1) + 
+            annotate("text", x = -2.5, y = 100, label = "Hit" , color="red", size=7, fontface="bold")
+            curves_plot_hit}
+        else{curves_plot}   
         
     }, width = 1100, height = 700)
 })
-
-
 
 
 
