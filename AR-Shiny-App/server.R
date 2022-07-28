@@ -81,44 +81,124 @@ cmpd1 = study[!is.na(logc),]
 #Finalized data set
 AR2study_complete = cmpd1[assay == "AR",]
 
-
-
 #plot dose-response AR data#
 #Source code written to plot hill curves through EPA offline pipeline
-#source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
-#source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
-#source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
-#source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
-#source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
 
-#hill_curve = function(hill_tp, hill_ga, hill_gw, lconc){
-#    return(hill_tp/(1+10^((hill_ga - lconc)*hill_gw)))
-#}
+hill_curve = function(hill_tp, hill_ga, hill_gw, lconc){
+    return(hill_tp/(1+10^((hill_ga - lconc)*hill_gw)))}
+
+##########
+#Sample data is a data frame with 5 chemicals. Change to data table, then loop over chemical name through tcplFit
+#tcplFit needs something called bmad, but it doesn't impact the results, 
+#but can limit the number of curves attempted to be fit, so set smaller than you think it really is
+bmad = .001
+##########
+
+#Set dataset to plot with without overriding AR2study_complete
+AR2plotting <- AR2study_complete
+
+AR2plotting$spid = AR2plotting$biogroup
+AR2plotting$resp = AR2plotting$nval
+
 
 
 #Shiny Server
 shinyServer(function(input, output) {
 
     output$filteredData <- renderDataTable({
-         if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 0){sample1 <- AR2study_complete %>% select(2,7,13,10,5:9,11:12,14:19)
-                                                                                     sample1}
+         if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 0){AR2study_complete}
     else if(input$fullDataCheck == 0 && input$chemCheck == 1 && input$cypCheck == 0){filtered <- AR2study_complete %>% filter(chnm == input$chemList)
-                                                                                     filtered2 <- filtered %>% select(2,7,13,10,5:9,11:12,14:19)
-                                                                                     filtered2}
-    else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 0){AR2study_complete}
-    else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 0){filtered <- AR2study_complete %>% filter(chnm == input$chemList)
                                                                                      filtered}
-    else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp <- AR2study_complete %>% filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
+    else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 0){filter <- AR2study_complete %>% select(7,10,13,11,14,15,19)
+                                                                                     filter}
+    else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 0){filtered <- AR2study_complete %>% select(7,10,13,11,14,15,19) %>% filter(chnm == input$chemList)
+                                                                                     filtered}
+    else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp <- AR2study_complete %>% select(7,10,13,11,14,15,19) %>% 
+                                                                                                    filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
                                                                                      filteredCyp}
     else if(input$fullDataCheck == 0 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp2 <- AR2study_complete %>% filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
-                                                                                     filteredCyp2 <- filteredCyp2 %>% select(2,7,13,10,5:9,11:12,14:19)
                                                                                      filteredCyp2}
-    else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 1){fullCypFilter <- AR2study_complete %>% filter(biogroup == input$cypList)
+    else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 1){fullCypFilter <- AR2study_complete %>% select(7,10,13,11,14,15,19) %>% filter(biogroup == input$cypList)
                                                                                      fullCypFilter}
-    else if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 1){cypFinal <- AR2study_complete %>% filter(biogroup == input$cypList) %>% select(2,7,13,10,5:9,11:12,14:19)
+    else if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 1){cypFinal <- AR2study_complete %>% filter(biogroup == input$cypList)
                                                                                      cypFinal}
     })
-
+    
+    
+    
+    output$plot <- renderPlot({
+    
+        ##########
+        #Begin user input for plotting
+        chemtitle.test = NULL
+        chemtitle.test = input$chemName
+        biogroup.test = input$biogroup
+        
+        sub.dt = AR2plotting[chnm == chemtitle.test & biogroup == biogroup.test,]
+        
+        dat_evan = sub.dt
+        setkey(dat_evan, spid)
+        dat_evan = dat_evan[,spid := as.factor(spid)]
+        
+        #Get hill parameters for each spid
+        dat_hill = data.table(spid = unique(dat_evan[,spid]))
+        
+        for(chem in dat_hill[,spid]){
+            pipefit = tcplFit_Lite(dat_evan[spid == chem,logc], dat_evan[spid == chem,resp], bmad)
+            
+            aic.vals = c(pipefit$hill_aic, pipefit$gnls_aic, pipefit$cnst_aic)
+            
+            hill_wtp = ifelse(min(aic.vals) == pipefit$hill_aic, pipefit$hill_tp, 
+                              ifelse(min(aic.vals) == pipefit$gnls_aic, pipefit$gnls_tp, 0))
+            hill_wga = ifelse(min(aic.vals) == pipefit$hill_aic, pipefit$hill_ga, 
+                              ifelse(min(aic.vals) == pipefit$gnls_aic, pipefit$gnls_ga, 0))
+            hill_wgw = ifelse(min(aic.vals) == pipefit$hill_aic, pipefit$hill_gw, 
+                              ifelse(min(aic.vals) == pipefit$gnls_aic, pipefit$gnls_gw, 0))
+            
+            dat_hill[spid == chem, hill_tp := hill_wtp]
+            dat_hill[spid == chem, hill_ga := hill_wga]
+            dat_hill[spid == chem, hill_gw := hill_wgw]
+        }
+        
+        # The palette with black:
+        cbbPalette = c("#000000", "#0000ff", "#888888")#rainbow(6)[1:5]) 
+        
+        curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color = spid)) +
+            theme_bw() +
+            geom_point(size = 1.5) + 
+            coord_cartesian(ylim=c(-25,125)) +
+            ylab("% AR Inhibtion") +
+            xlab("[cmpd] (log uM)") +
+            ggtitle(dat_evan$chnm) +
+            scale_colour_manual(values=cbbPalette, name = "Biogroup") 
+        
+        #plot the fitted curves, color by spid. This code may need to be modified if you have more colors than in cbbPalette
+        k = 1L
+        for(chem in dat_hill[,spid]){
+            chemical_fit_hill_tp = dat_hill[spid == chem, hill_tp]
+            chemical_fit_hill_ga = dat_hill[spid == chem, hill_ga]
+            chemical_fit_hill_gw = dat_hill[spid == chem, hill_gw]
+            curves_plot = curves_plot +
+                stat_function(fun = hill_curve, args=list(hill_tp = chemical_fit_hill_tp, 
+                                                          hill_ga = chemical_fit_hill_ga, 
+                                                          hill_gw = chemical_fit_hill_gw),
+                              color = cbbPalette[k], 
+                              size=1) 
+            k = k + 1L
+        }
+        
+        curves_plot   
+        
+    })
 })
+
+
+
+
 
 
