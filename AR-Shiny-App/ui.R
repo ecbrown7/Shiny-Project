@@ -79,9 +79,11 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                     "Trifluralin","Vinclozolin","Z-Tetrachlorvinphos" ,"Zearalenone","o,p'-DDT","p,p'-DDD","p,p'-DDE","p-Dichlorobenzene")),
                               
                                checkboxGroupInput("biogroup","Select Biogroup: ",
-                                        choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"), selected = c("noRNA", "Bgal"))),
+                                        choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"), selected = c("noRNA", "Bgal")),
                             
-                              mainPanel(plotOutput("plot")))),
+                              checkboxInput("Viability", strong("Show Viability Plots"), value = TRUE), width = 4),
+                              
+                              mainPanel(plotOutput("plot"), plotOutput("ABplot")))),
                    
                    
                    
