@@ -80,7 +80,7 @@ setkey(study, chnm)
 
 ########For hit calls - #gives the global, zero-centered (median = 0) mad for DMSO
 bmad1 = study[assay == "AR" & chnm == "DMSO", mad(nval)] 
-threshold = 6*bmad1
+threshold = 5*bmad1
 med.resp.by.chnm.dose.biogroup = study[assay == "AR" & chnm != "DMSO", .(med.resp = median(nval)), by = .(chnm, logc, biogroup)]
 hits.all.logc.and.biogroups = med.resp.by.chnm.dose.biogroup[med.resp > threshold,]
 unique.hits.antagonist = data.table(unique(hits.all.logc.and.biogroups$chnm))
@@ -315,19 +315,19 @@ shinyServer(function(input, output) {
             k = k + 1L
         }
         
-       curves_plot2
+       curves_plot2 
+       
         
         }}, width = 800, height = 425)
+    
+    
+    
+    output$hitsData <- renderDataTable({
+        chemotypes[,c(1,2,2:(input$colNum + 2))]
+    })
+    
+
 })
-
-
-
-
-
-
-
-
-
 
 
 
