@@ -3,6 +3,9 @@
 library(shiny)
 library(data.table)
 library(ggplot2)
+library(caret)
+library(randomForest)
+library(gbm)
 
 #Reading in data, modifying data, creating master file called "study" that contains all information in AR2 Antagonist Ref 128 Study
 
@@ -129,6 +132,8 @@ ABplotting$resp = ABplotting$nval
 #read in chemotypes
 chemotypes = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
 colnames(chemotypes)[1] = "Chemical"
+chemotypes$hitcall <- as.factor(chemotypes$hitcall)
+chemotypeModel <- chemotypes[,-1]
 ###########
 
 
@@ -323,27 +328,84 @@ shinyServer(function(input, output) {
     
     
     output$hitsData <- renderDataTable({
-        chemotypes[,c(1,2,2:(input$colNum + 2))]
+        chemotypes
     })
     
+    
 
+    output$bagData <- renderDataTable({
+
+        #Set fixed sampling 
+        set.seed(18)
+
+        #splitting data using createDataPartition from caret package
+        index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
+        training <- chemotypeModel[index,]
+        testing <- chemotypeModel[-index,]
+
+
+        ##Fit bagged tree model##
+        bagFit <- train(hitcall ~ ., data = training,
+                 method = "treebag", 
+                 trControl = trainControl(method = "repeatedcv", number = 5, repeats = 2))
+
+        ##Bagged prediction
+        bagPred <- predict(bagFit, newdata = testing)
+        a <- data.table(confusionMatrix(bagPred, testing$hitcall))
+        a
+})
+    
+    
+    
+    output$treeData <- renderDataTable({
+        
+        #Set fixed sampling 
+        set.seed(18)
+        
+        #splitting data using createDataPartition from caret package
+        index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
+        training <- chemotypeModel[index,]
+        testing <- chemotypeModel[-index,]
+        
+        ##Fit random forest model##
+        rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
+
+        ##Random Forest prediction
+        rfPred2 <- predict(rfFit2, newdata = testing)
+        b <- data.table(confusionMatrix(rfPred2, testing$hitcall))
+        b
+        #Look at variable importance plot
+        #varImpPlot(rfFit2)
 })
 
+    
+    
+    output$boostData <- renderDataTable({
+        
+        #Set fixed sampling 
+        set.seed(18)
+        
+        #splitting data using createDataPartition from caret package
+        index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
+        training <- chemotypeModel[index,]
+        testing <- chemotypeModel[-index,]
+        
+        ##Fit boosted tree model##
+        boostFit <- train(hitcall ~ ., data = training,
+                   method = "gbm", 
+                   trControl = trainControl(method = "repeatedcv", number = 5, repeats = 2),
+                   tuneGrid = expand.grid(interaction.depth = c(1, 2, 3, 4), 
+                                          n.trees = c(25, 50, 100, 150, 200), 
+                                          shrinkage = 0.1,
+                                          n.minobsinnode = 5))
 
+        #Predict Boosted tree model
+        boostPred <- predict(boostFit, newdata = testing)
+        c <- data.table(confusionMatrix(boostPred, testing$hitcall))
+        c
+})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+})
 
 
 

@@ -92,16 +92,13 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                    tabPanel("Modeling",
                             titlePanel("Chemotype Modeling for AR2 Assay Hits"),
                       sidebarLayout(
-                      sidebarPanel(
-                        sliderInput(
-                          "colNum",
-                          strong("Select Number of Chemotypes to Display"), min = 1, max = 729, 5, step = 1, round = FALSE, ticks = TRUE)),
+                      sidebarPanel(),
                       
                       mainPanel(tabsetPanel(type = "tabs",
-                                            tabPanel("hitsData", dataTableOutput("hitsData")),
-                                            tabPanel("Bagged Model"),
-                                            tabPanel("Random Forest Model"),
-                                            tabPanel("Boosted Model"),
+                                            tabPanel("Chemotype Data", dataTableOutput("hitsData")),
+                                            tabPanel("Bagged Model", dataTableOutput("bagData")),
+                                            tabPanel("Random Forest Model", dataTableOutput("treeData")),
+                                            tabPanel("Boosted Model", dataTableOutput("boostData")),
                                             tabPanel("Results"))))
 )))
 
