@@ -12,8 +12,35 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                    tabPanel("Introduction",
                             titlePanel("Introduction to AR2 Assay"),
                     sidebarLayout(
-                    sidebarPanel("Description"),
-                    mainPanel())),
+                    sidebarPanel(
+                      strong(h5("More Information")),
+                      h6(HTML("<p><a href='https://www.epa.gov/endocrine-disruption/what-endocrine-system'> Endocrine Disrupting Chemicals </a>")),
+                      h6(HTML("<p><a href='https://www.epa.gov/endocrine-disruption/endocrine-disruptor-screening-program-edsp-overview'> EPA EDSP </a>")),
+                      h6(HTML("<p><a href='https://cfpub.epa.gov/si/si_public_record_Report.cfm?dirEntryId=351000&Lab=NCCT'> AR Model </a>")),
+                      h6(HTML("<p><a href='https://pubmed.ncbi.nlm.nih.gov/29555536/'> Metabolism Retrofit Development </a>")),
+                      
+                      width = 3),
+                    mainPanel(
+                      
+                      h1("Introducion to the AR2 Assay"),
+                      h3("Background"),
+                      p("In the 1990's, some scientists proposed that certain chemicals might be disrupting the endocrine systems of humans and wildlife. At the time, only a handful of chemicals had been found to disrupt the endocrine 
+                        systems of animals in laboratory studies, but compelling evidence showed that endocrine systems of certain fish and wildlife had been affected by chemical contaminants, 
+                        resulting in developmental and reproductive problems. Based on this and other evidence, congress passed the Food Quality and Protection Act (FQPA) that requires EPA to screen pesticide chemicals 
+                        for their potential to produce effects similar to those by the female hormones (estrogen) in humans. Fast forward several years and those chemicals become of ever increasing concern and are labeled
+                        Endocrine Disrupting Chemicals (EDCs). A tremendous amount of progress was made during those years in the early 21st century, but the mountain of over 10,000 chemicals in commerce that have still evaded 
+                        thorough evaluation to this day remained an unsolved challenge. In 2015, EPA announced the use of cutting-edge technology including high-throughput animal-free assays and integrated computational
+                         models that would shift the approach from a reactive chemical assessment standpoint, to a predictive one."),
+                      p("To this day, there are many laboratories including the Simmons Laboratory at EPA in Research Triangle Park that work to develop new endocrine high throughput assays to provide data streams 
+                        for the computational model in order to improve prediction. There are three major endocrine pathways of interest, the Androgen pathway, the Estrogen pathway, and the Thyroid pathway. 
+                        While the Estrogen model was first to gain exposure, the Androgen model is close behind and of equivalent importance. The Androgen model is build on the back of four indespensible assay types, 
+                        one of which being protein homodimerization assays. When several of the streams of data for this assay type became unavailable, the computational modeling team needed an internalized replacement for 
+                        collecting data on new chemicals going forward."),
+                      p("The Simmons Lab team stepped in and began developing replacement assays in 2020 that have now been completed and validated. This Shiny App is a uder friendly way to explore our validation data for the Androgen 
+                        Receptor Antagonist protein homodimerization assay. The reference chemical set used contained 128 chemicals enriched for endocrine response and may impact the modeling results. ")
+                      
+                      
+                    ))),
                    
                    
                    #Data Exploration Panel
