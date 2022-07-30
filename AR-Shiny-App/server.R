@@ -134,7 +134,9 @@ chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_dat
 colnames(chemotypes)[1] = "Chemical"
 chemotypes$hitcall <- as.factor(chemotypes$hitcall)
 chemotypeModel <- chemotypes[,-1]
+hitsData <- chemotypes[chemotypes$hitcall == 1,]
 ###########
+
 
 
 #Shiny Server
@@ -159,7 +161,27 @@ shinyServer(function(input, output) {
                                                                                      cypFinal}
     })
     
-    
+    observe({ if(input$saveButton == 0){} 
+      else if(input$saveButton == 1){
+        
+        if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 0){write.csv(AR2study_complete, file = "AR2_FullData", row.names = FALSE)}
+        else if(input$fullDataCheck == 0 && input$chemCheck == 1 && input$cypCheck == 0){filtered <- AR2study_complete %>% filter(chnm == input$chemList)
+        write.csv(filtered, file = "AR2_FilteredData1", row.names = FALSE)}
+        else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 0){filter <- AR2study_complete %>% select(7,10,13,11,14,15,19)
+        write.csv(filter, file = "AR2_FilteredData2", row.names = FALSE)}
+        else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 0){filteredb <- AR2study_complete %>% select(7,10,13,11,14,15,19) %>% filter(chnm == input$chemList)
+        write.csv(filteredb, file = "AR2_FilteredData3", row.names = FALSE)}
+        else if(input$fullDataCheck == 1 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp <- AR2study_complete %>% select(7,10,13,11,14,15,19) %>% 
+          filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
+        write.csv(filteredCyp, file = "AR2_FilteredData4", row.names = FALSE)}
+        else if(input$fullDataCheck == 0 && input$chemCheck == 1 && input$cypCheck == 1){filteredCyp2 <- AR2study_complete %>% filter(chnm == input$chemList) %>% filter(biogroup == input$cypList)
+        write.csv(filteredCyp2, file = "AR2_FilteredData5", row.names = FALSE)}
+        else if(input$fullDataCheck == 1 && input$chemCheck == 0 && input$cypCheck == 1){fullCypFilter <- AR2study_complete %>% select(7,10,13,11,14,15,19) %>% filter(biogroup == input$cypList)
+        write.csv(fullCypFilter, file = "AR2_FilteredData6", row.names = FALSE)}
+        else if(input$fullDataCheck == 0 && input$chemCheck == 0 && input$cypCheck == 1){cypFinal <- AR2study_complete %>% filter(biogroup == input$cypList)
+        write.csv(cypFinal, file = "AR2_FilteredData7", row.names = FALSE)}
+    }
+    })
     
     output$plot <- renderPlot({
     
@@ -208,7 +230,7 @@ shinyServer(function(input, output) {
         #Make AR Antagonist plots
         curves_plot <- ggplot(dat_evan, aes(x=logc, y=resp, color=spid)) +
             theme_bw() +
-            geom_hline(yintercept=(6*bmad1), color="red", size=1) +
+            geom_hline(yintercept=(4*bmad1), color="red", size=.8) +
             geom_point(size = 1.5) + 
             coord_cartesian(ylim=c(-25,125)) +
             ylab("% AR Inhibtion") +
@@ -237,8 +259,8 @@ shinyServer(function(input, output) {
             k = k + 1L
         }
         
-        if(input$chemName %in% unique.hits.antagonist$V1){curves_plot_hit <- curves_plot  + 
-            annotate("text", x = -3, y = 95, label = "Hit" , color="red", size=7, fontface="bold")
+        if(input$chemName %in% hitsData$Chemical){curves_plot_hit <- curves_plot  + 
+            annotate("text", x = -3.1, y = 115, label = "AR Hit" , color="red", size=7, fontface="bold")
             curves_plot_hit}
         else{curves_plot}   
         
@@ -332,30 +354,6 @@ shinyServer(function(input, output) {
     })
     
     
-
-   # output$bagData <- renderDataTable({
-
-        #Set fixed sampling 
-       # set.seed(18)
-
-        #splitting data using createDataPartition from caret package
-       # index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
-       # training <- chemotypeModel[index,]
-        #testing <- chemotypeModel[-index,]
-
-
-        ##Fit bagged tree model##
-       # bagFit <- train(hitcall ~ ., data = training,
-        #         method = "treebag", 
-        #         trControl = trainControl(method = "repeatedcv", number = 5, repeats = 2))
-
-        ##Bagged prediction
-       # bagPred <- predict(bagFit, newdata = testing)
-       # a <- data.table(confusionMatrix(bagPred, testing$hitcall))
-       # a
-#})
-    
-    
     
     output$treeData <- renderTable({
         
@@ -428,6 +426,10 @@ shinyServer(function(input, output) {
       
     }, width = 600, height = 500)
 })
+
+
+
+
 
 
 

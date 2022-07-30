@@ -48,7 +48,8 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                      conditionalPanel(condition = "input.cypCheck == 1", selectInput("cypList","Select Biogroup: ",
                        choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"))),
                      
-                     checkboxInput("fullDataCheck", p("Display Key Columns Only", style = "color:blue"), value = FALSE)),
+                     checkboxInput("fullDataCheck", p("Display Key Columns Only", style = "color:blue"), value = FALSE),
+                     actionButton("saveButton", strong("Save Dataset as .CSV")), width = 3),
                      
                      mainPanel(dataTableOutput("filteredData")))),
         
@@ -90,18 +91,17 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                   
                    #Modeling Panel
                    tabPanel("Modeling",
-                            titlePanel("Chemotype Modeling for AR2 Assay Hits"),
+                            titlePanel("Chemotype Modeling for AR2 Assay"),
                       sidebarLayout(
                       sidebarPanel(
                         sliderInput("splitProp", strong("Set Proportion of Data to Train On"), min = 0.4, max = 0.85, 0.7, step = 0.05, ticks = FALSE)
                       , width = 3),
                       
                       mainPanel(tabsetPanel(type = "tabs",
-                                            tabPanel("Chemotype Data", dataTableOutput("hitsData")),
-                                            tabPanel("Bagged Model", dataTableOutput("bagData")),
-                                            tabPanel("Random Forest Model", tableOutput("treeData"), plotOutput("treeDataPlot")),
-                                            tabPanel("Boosted Model", dataTableOutput("boostData")),
-                                            tabPanel("Results"))))
-)))
+                                            tabPanel("Modeling Info"),
+                                            tabPanel("Model Fitting", tableOutput("treeData"), plotOutput("treeDataPlot")),
+                                            tabPanel("Prediction"),
+                                            tabPanel("Chemotype Data", dataTableOutput("hitsData"))))
+))))
 
 
