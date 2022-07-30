@@ -10,19 +10,19 @@ library(gbm)
 #Reading in data, modifying data, creating master file called "study" that contains all information in AR2 Antagonist Ref 128 Study
 
 # read in dpid_128 chem plate map#
-dpid.128 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/validation_chem.csv", stringsAsFactors = F, skipNul = T)
+dpid.128 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/validation_chem.csv", stringsAsFactors = F, skipNul = T)
 dpid.128 = as.data.table(dpid.128)
 
 # read in control plate map#
-control = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/antagonist_control_chem.csv", stringsAsFactors = F, skipNul = T)
+control = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/antagonist_control_chem.csv", stringsAsFactors = F, skipNul = T)
 control = as.data.table(control)
 
 # read in cohort dispense maps#
-dispmap1 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_1.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap1 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_1.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap1$cohort = 1
-dispmap2 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_2.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap2 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_2.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap2$cohort = 2
-dispmap3 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_3.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap3 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_3.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap3$cohort = 3
 
 dispmap = rbind(dispmap1, dispmap2, dispmap3)
@@ -38,7 +38,7 @@ dispmap$stock.mm = ifelse(dispmap$Source.Plate == "DPID_128", dpid.128$stock.mM[
                           ifelse(dispmap$Source.Plate == "CNTRL", control$stock.mM[match(dispmap$Source.Well, control$well)], NA))
 
 # read in filemap #
-filemap = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/AR_Antagonist128_Met_filemap.csv", stringsAsFactors = F, skipNul = T)
+filemap = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/AR_Antagonist128_Met_filemap.csv", stringsAsFactors = F, skipNul = T)
 filemap = data.table(filemap)
 
 ### map data data ###
@@ -47,7 +47,7 @@ filemap = filemap[!TR %in% 2874:2913,]
 study = NULL
 for (j in 1:nrow(filemap)){
     
-    file.name = paste("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/data/TRno", filemap$TR[j], ".CSV", sep = "")
+    file.name = paste("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/data/TRno", filemap$TR[j], ".CSV", sep = "")
     sub = read.csv(file.name, stringsAsFactors = F, skipNul = T)
     sub$X = NULL
     names(sub) = c("rowi", "coli", "sample", "RLU")
@@ -95,11 +95,11 @@ AR2study_complete = cmpd1[assay == "AR",]
 
 #plot dose-response AR data#
 #Source code written to plot hill curves through EPA offline pipeline
-source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
-source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
-source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
-source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
-source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
+source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
+source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
+source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
+source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
+source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
 
 hill_curve = function(hill_tp, hill_ga, hill_gw, lconc){
     return(hill_tp/(1+10^((hill_ga - lconc)*hill_gw)))}
@@ -130,7 +130,7 @@ ABplotting$resp = ABplotting$nval
 
 ##########For modeling and hit calls
 #read in chemotypes
-chemotypes = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
 colnames(chemotypes)[1] = "Chemical"
 chemotypes$hitcall <- as.factor(chemotypes$hitcall)
 chemotypeModel <- chemotypes[,-1]
@@ -333,101 +333,103 @@ shinyServer(function(input, output) {
     
     
 
-    output$bagData <- renderDataTable({
+   # output$bagData <- renderDataTable({
 
         #Set fixed sampling 
-        set.seed(18)
+       # set.seed(18)
 
         #splitting data using createDataPartition from caret package
-        index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
-        training <- chemotypeModel[index,]
-        testing <- chemotypeModel[-index,]
+       # index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
+       # training <- chemotypeModel[index,]
+        #testing <- chemotypeModel[-index,]
 
 
         ##Fit bagged tree model##
-        bagFit <- train(hitcall ~ ., data = training,
-                 method = "treebag", 
-                 trControl = trainControl(method = "repeatedcv", number = 5, repeats = 2))
+       # bagFit <- train(hitcall ~ ., data = training,
+        #         method = "treebag", 
+        #         trControl = trainControl(method = "repeatedcv", number = 5, repeats = 2))
 
         ##Bagged prediction
-        bagPred <- predict(bagFit, newdata = testing)
-        a <- data.table(confusionMatrix(bagPred, testing$hitcall))
-        a
-})
+       # bagPred <- predict(bagFit, newdata = testing)
+       # a <- data.table(confusionMatrix(bagPred, testing$hitcall))
+       # a
+#})
     
     
     
-    output$treeData <- renderDataTable({
+    output$treeData <- renderTable({
         
         #Set fixed sampling 
         set.seed(18)
-        
+    
         #splitting data using createDataPartition from caret package
-        index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
+        index <- createDataPartition(y = chemotypeModel$hitcall, p = input$splitProp, list = FALSE)
         training <- chemotypeModel[index,]
         testing <- chemotypeModel[-index,]
-        
+    
         ##Fit random forest model##
         rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
-
+    
         ##Random Forest prediction
+        set.seed(18)
         rfPred2 <- predict(rfFit2, newdata = testing)
-        b <- data.table(confusionMatrix(rfPred2, testing$hitcall))
-        b
+        b <- confusionMatrix(rfPred2, testing$hitcall)
+        b1 <- data.table(b$table)
+        accPre <- b$overall
+        acc <- c("Accuracy", accPre[1])
+        b2 <- b1 %>% rbind(acc, fill = TRUE)
+        colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
+    
+        b2
+        
         #Look at variable importance plot
         #varImpPlot(rfFit2)
 })
 
     
-    
-    output$boostData <- renderDataTable({
-        
-        #Set fixed sampling 
-        set.seed(18)
-        
-        #splitting data using createDataPartition from caret package
-        index <- createDataPartition(y = chemotypeModel$hitcall, p = 0.65, list = FALSE)
-        training <- chemotypeModel[index,]
-        testing <- chemotypeModel[-index,]
-        
-        ##Fit boosted tree model##
-        boostFit <- train(hitcall ~ ., data = training,
-                   method = "gbm", 
-                   trControl = trainControl(method = "repeatedcv", number = 5, repeats = 2),
-                   tuneGrid = expand.grid(interaction.depth = c(1, 2, 3, 4), 
-                                          n.trees = c(25, 50, 100, 150, 200), 
-                                          shrinkage = 0.1,
-                                          n.minobsinnode = 5))
-
-        #Predict Boosted tree model
-        boostPred <- predict(boostFit, newdata = testing)
-        c <- data.table(confusionMatrix(boostPred, testing$hitcall))
-        c
+    output$treeDataPlot <- renderPlot({
+      
+      #Set fixed sampling 
+      set.seed(18)
+      
+      #splitting data using createDataPartition from caret package
+      index <- createDataPartition(y = chemotypeModel$hitcall, p = input$splitProp, list = FALSE)
+      training <- chemotypeModel[index,]
+      testing <- chemotypeModel[-index,]
+      
+      ##Fit random forest model##
+      rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
+      
+      ##Random Forest prediction
+      set.seed(18)
+      rfPred2 <- predict(rfFit2, newdata = testing)
+      b <- confusionMatrix(rfPred2, testing$hitcall)
+      b1 <- data.table(b$table)
+      accPre <- b$overall
+      acc <- c("Accuracy", accPre[1])
+      b2 <- b1 %>% rbind(acc, fill = TRUE)
+      colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
+      
+      #Look at variable importance plot
+      var <- varImp(rfFit2)
+      varOrdered = var[order(var$`1`, decreasing = TRUE), ]
+      varPlot <- varOrdered[1:20,]
+      names <- rownames(varPlot)
+      varPlot2 <- cbind(names, varPlot)
+      colnames(varPlot2) = c("Chemical", "Gini")
+      rownames(varPlot2) = NULL
+      varPlot2 = varPlot2[,-3]
+      minV = min(varPlot2$Gini) - 0.25
+      maxV = max(varPlot2$Gini) + 0.25
+      
+      g <- ggplot(varPlot2, aes(x = Gini, y = reorder(Chemical, Gini))) + geom_point(size = 3) + theme_bw() +
+            scale_x_continuous(name = "Mean Dec. Gini", limits = c(minV, maxV)) + ggtitle("Chemotype Importance")+ ylab("")
+      g
+      
+    }, width = 600, height = 500)
 })
 
-})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-        
 
 
 
