@@ -9,7 +9,7 @@ library(shinythemes)
 shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                    
                    #Introduction Panel
-                   tabPanel("Introduction",
+                   tabPanel("About",
                             titlePanel("Introduction to AR2 Assay"),
                     sidebarLayout(
                     sidebarPanel(
@@ -22,8 +22,21 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                       width = 3),
                     mainPanel(
                       
-                      h1("Introducion to the AR2 Assay"),
-                      h3("Background"),
+                      h3("Purpose"),
+                      p("This Shiny App is a user friendly way to explore real-life assay validation data for a novel Androgen Receptor (AR) chemical screening assay (AR2 assay) developed at the US Environmental Protection Agency. There are 
+                        three pages aside from this introduction, each with a distinct purpose."),
+                      p("The Data Exploration page will allow you to scroll through the complete data set or view a selected columns view that can present clearer. 
+                        In addition, this page will allow you to filter either data set by chemical name, biogroup, or both. Finally, this page gives you the ability to save all subsets of data as a CSV file on your local machine."),
+                      p("The Data Visualization page is a place to view plots of the data. Both AR assay and paralleled cell viability plots are shown by default, but you'll be able to select AR only if desired. This page also allows 
+                        you to filter plots by the same metrics as fiound in the Data Exploration page. Curves for these plots were fit using the hill curve function and hits in the AR assay were established using 4*bmad threshold, which is 
+                        shown on the plot. Final hit calls, made to distinguish AR specific chemicals from purely cytotoxic chemicals, were made using two criteria (1. Hit in AR assay, 2. deltaAC50 from AR assay to cell viability assay > 1.). 
+                        The final hit calls were then recorded and mapped to a dataset comprising the chemotypes for each chemical tested."),
+                      p("The Modeling page implements the chemotype-hitcall dataset to predict androgen receptor disrupting chemicals (AR antagonists) from a potential series of 739 chemotype predictors. An example of a predictor 
+                        is a benzene ring, but these can be wide ranging and occosionally repetitive. This dataset can be viewed in the Data tab within the Modeling page. The goal of this page is two-fold. 
+                        First, you'll be able to visualize through variable importance plots which variables were most important to predicting AR hits. Knowing particular active chemotypes would be particularly useful to 
+                        know when looking at future chemicals to flag for further investigation. Second, this page attempts to allow the user to input a specific chemotype and allow the model to predict that chemotype for AR toxicity."),
+                      
+                      strong(h3("Further Background")),
                       p("In the 1990's, some scientists proposed that certain chemicals might be disrupting the endocrine systems of humans and wildlife. At the time, only a handful of chemicals had been found to disrupt the endocrine 
                         systems of animals in laboratory studies, but compelling evidence showed that endocrine systems of certain fish and wildlife had been affected by chemical contaminants, 
                         resulting in developmental and reproductive problems. Based on this and other evidence, congress passed the Food Quality and Protection Act (FQPA) that requires EPA to screen pesticide chemicals 
@@ -35,10 +48,18 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                         for the computational model in order to improve prediction. There are three major endocrine pathways of interest, the Androgen pathway, the Estrogen pathway, and the Thyroid pathway. 
                         While the Estrogen model was first to gain exposure, the Androgen model is close behind and of equivalent importance. The Androgen model is build on the back of four indespensible assay types, 
                         one of which being protein homodimerization assays. When several of the streams of data for this assay type became unavailable, the computational modeling team needed an internalized replacement for 
-                        collecting data on new chemicals going forward."),
-                      p("The Simmons Lab team stepped in and began developing replacement assays in 2020 that have now been completed and validated. This Shiny App is a uder friendly way to explore our validation data for the Androgen 
-                        Receptor Antagonist protein homodimerization assay. The reference chemical set used contained 128 chemicals enriched for endocrine response and may impact the modeling results. ")
+                        collecting data on new chemicals going forward. This is where our laboratory stepped in and began developing replacement assays in 2020 that have now been completed and validated."),
                       
+                      strong(h3("Footnote on Biogroups and Assay Specifics")),
+                      p("Throughout this app, you will be able to sort data and view data based on biogroups. This assay was developed using the xenobiotic metabolism retrofit method (linked in sidebar). Xenobiotic metabolism is responsible for 
+                        rending toxic parent substances into non-toxic metabolites and occurs mainly in your liver. There in the human liver there are over 50 enzymes named Cytochrome p450 enzymes (cyp's) that contribute to this 
+                        physiological process. In our assay, we make use of the 11 most prevelant human cyp's and as you filter plots by cyp, you will be able to notice a shifted curve in comparison to our two controls, noRNA and Bgal. 
+                        To observe this shift the best and understand the purpose of adding metbaolism to our assay, filter the plots page to chemical = Flutamide, and check biogroup = 1A2 and 2C19. To view plots for our AR assay control, 
+                        filter the plots page to chemical = BICAL. To view plots for our viability assay control, filter the plots page to chemical - DCLN. It should be noted that the chemicals tested here are part of an endocrine validation set that
+                         is enriched for pro and anti-endocrine function, meaning most chemicals will either be clearly positive or clearly negative, and selected for this purpose. As a result, some of the variable importance conlusions should be 
+                        drawn carefully so as not to overgeneralize these results to a slew of unknown chemicals."),
+                      br(),
+                      br()
                       
                     ))),
                    

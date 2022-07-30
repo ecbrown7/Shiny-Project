@@ -264,7 +264,7 @@ shinyServer(function(input, output) {
             curves_plot_hit}
         else{curves_plot}   
         
-    }, width = 800, height = 425)
+    }, width = 800, height = 400)
     
     
     
@@ -345,7 +345,7 @@ shinyServer(function(input, output) {
        curves_plot2 
        
         
-        }}, width = 800, height = 425)
+        }}, width = 800, height = 400)
     
     
     
