@@ -135,6 +135,9 @@ colnames(chemotypes)[1] = "Chemical"
 chemotypes$hitcall <- as.factor(chemotypes$hitcall)
 chemotypeModel <- chemotypes[,-1]
 hitsData <- chemotypes[chemotypes$hitcall == 1,]
+sample_chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/sample_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+subsetChemotypes <- chemotypes[, colSums(chemotypes != 0) > 0]
+subsetChemotypesB <- subsetChemotypes[,-1]
 ###########
 
 
@@ -347,27 +350,34 @@ shinyServer(function(input, output) {
         
         }}, width = 800, height = 400)
     
-    
-    
     output$hitsData <- renderDataTable({
-        chemotypes
+        if(input$subsetChemos == 1){subsetChemotypes}
+        else {chemotypes}
+    })
+    
+    output$displayChemos <- renderText({
+      if(input$subsetChemos == 1){paste0("The number of chemotype predictors shown is: ", ncol(subsetChemotypes))}
+      else {paste0("The number of chemotype predictors shown is: ", ncol(chemotypes))}
+      
     })
     
     
     
     output$treeData <- renderTable({
         
+      
+      if(input$modeldata == "subsetChemotypesB$hitcall"){
+        
         #Set fixed sampling 
         set.seed(18)
-    
+        
         #splitting data using createDataPartition from caret package
-        index <- createDataPartition(y = chemotypeModel$hitcall, p = input$splitProp, list = FALSE)
-        training <- chemotypeModel[index,]
-        testing <- chemotypeModel[-index,]
-    
+        index <- createDataPartition(y = subsetChemotypesB$hitcall, p = input$split, list = FALSE)
+        training <- subsetChemotypesB[index,]
+        testing <- subsetChemotypesB[-index,]
         ##Fit random forest model##
         rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
-    
+        
         ##Random Forest prediction
         set.seed(18)
         rfPred2 <- predict(rfFit2, newdata = testing)
@@ -377,23 +387,47 @@ shinyServer(function(input, output) {
         acc <- c("Accuracy", accPre[1])
         b2 <- b1 %>% rbind(acc, fill = TRUE)
         colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
-    
-        b2
         
-        #Look at variable importance plot
-        #varImpPlot(rfFit2)
+        b2
+      }
+      
+      else if(input$modeldata == "chemotypeModel$hitcall"){
+        
+        #Set fixed sampling 
+        set.seed(18)
+        
+        #splitting data using createDataPartition from caret package
+        index <- createDataPartition(y = chemotypeModel$hitcall, p = input$split, list = FALSE)
+        training <- chemotypeModel[index,]
+        testing <- chemotypeModel[-index,]
+        ##Fit random forest model##
+        rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
+        
+        ##Random Forest prediction
+        set.seed(18)
+        rfPred2 <- predict(rfFit2, newdata = testing)
+        b <- confusionMatrix(rfPred2, testing$hitcall)
+        b1 <- data.table(b$table)
+        accPre <- b$overall
+        acc <- c("Accuracy", accPre[1])
+        b2 <- b1 %>% rbind(acc, fill = TRUE)
+        colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
+        
+        b2
+      }
 })
 
     
     output$treeDataPlot <- renderPlot({
       
+      if(input$modeldata == "subsetChemotypesB$hitcall"){
       #Set fixed sampling 
       set.seed(18)
       
       #splitting data using createDataPartition from caret package
-      index <- createDataPartition(y = chemotypeModel$hitcall, p = input$splitProp, list = FALSE)
-      training <- chemotypeModel[index,]
-      testing <- chemotypeModel[-index,]
+      index <- createDataPartition(y = subsetChemotypesB$hitcall, p = input$split, list = FALSE)
+      training <- subsetChemotypesB[index,]
+      testing <- subsetChemotypesB[-index,]
       
       ##Fit random forest model##
       rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
@@ -423,12 +457,58 @@ shinyServer(function(input, output) {
       g <- ggplot(varPlot2, aes(x = Gini, y = reorder(Chemical, Gini))) + geom_point(size = 3) + theme_bw() +
             scale_x_continuous(name = "Mean Dec. Gini", limits = c(minV, maxV)) + ggtitle("Chemotype Importance")+ ylab("")
       g
+    }
       
-    }, width = 600, height = 500)
+    else if(input$modeldata == "chemotypeModel$hitcall"){
+      #Set fixed sampling 
+      set.seed(18)
+      
+      #splitting data using createDataPartition from caret package
+      index <- createDataPartition(y = chemotypeModel$hitcall, p = input$split, list = FALSE)
+      training <- chemotypeModel[index,]
+      testing <- chemotypeModel[-index,]
+      
+      ##Fit random forest model##
+      rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
+      
+      ##Random Forest prediction
+      set.seed(18)
+      rfPred2 <- predict(rfFit2, newdata = testing)
+      b <- confusionMatrix(rfPred2, testing$hitcall)
+      b1 <- data.table(b$table)
+      accPre <- b$overall
+      acc <- c("Accuracy", accPre[1])
+      b2 <- b1 %>% rbind(acc, fill = TRUE)
+      colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
+      
+      #Look at variable importance plot
+      var <- varImp(rfFit2)
+      varOrdered = var[order(var$`1`, decreasing = TRUE), ]
+      varPlot <- varOrdered[1:20,]
+      names <- rownames(varPlot)
+      varPlot2 <- cbind(names, varPlot)
+      colnames(varPlot2) = c("Chemical", "Gini")
+      rownames(varPlot2) = NULL
+      varPlot2 = varPlot2[,-3]
+      minV = min(varPlot2$Gini) - 0.25
+      maxV = max(varPlot2$Gini) + 0.25
+      
+      g <- ggplot(varPlot2, aes(x = Gini, y = reorder(Chemical, Gini))) + geom_point(size = 3) + theme_bw() +
+        scale_x_continuous(name = "Mean Dec. Gini", limits = c(minV, maxV)) + ggtitle("Chemotype Importance")+ ylab("")
+      g
+      
+      }
+}, width = 600, height = 500)
+    
 })
 
 
 
+
+#GLMfit <- glm(hitcall ~., data = chemotypeModel, family = "binomial")
+
+#prediction <- data.frame(predict(GLMfit, newdata = sample_chemotypes))
+#colnames(prediction) = "Prob"
 
 
 

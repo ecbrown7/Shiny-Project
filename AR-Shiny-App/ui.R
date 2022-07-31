@@ -4,6 +4,7 @@ library(tidyverse)
 library(data.table)
 library(shiny)
 library(shinythemes)
+library(mathjaxr)
 
 #UI
 shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
@@ -13,11 +14,11 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                             titlePanel("Introduction to AR2 Assay"),
                     sidebarLayout(
                     sidebarPanel(
-                      h5(strong("More Information")),
-                      h6(HTML("<p><a href='https://www.epa.gov/endocrine-disruption/what-endocrine-system'> Endocrine Disrupting Chemicals </a>")),
-                      h6(HTML("<p><a href='https://www.epa.gov/endocrine-disruption/endocrine-disruptor-screening-program-edsp-overview'> EPA EDSP </a>")),
-                      h6(HTML("<p><a href='https://cfpub.epa.gov/si/si_public_record_Report.cfm?dirEntryId=351000&Lab=NCCT'> AR Model </a>")),
-                      h6(HTML("<p><a href='https://pubmed.ncbi.nlm.nih.gov/29555536/'> Metabolism Retrofit Development </a>")),
+                      h4(strong("More Information")),
+                      h5(HTML("<p><a href='https://www.epa.gov/endocrine-disruption/what-endocrine-system'> Endocrine Disrupting Chemicals </a>")),
+                      h5(HTML("<p><a href='https://www.epa.gov/endocrine-disruption/endocrine-disruptor-screening-program-edsp-overview'> EPA EDSP </a>")),
+                      h5(HTML("<p><a href='https://cfpub.epa.gov/si/si_public_record_Report.cfm?dirEntryId=351000&Lab=NCCT'> AR Model </a>")),
+                      h5(HTML("<p><a href='https://pubmed.ncbi.nlm.nih.gov/29555536/'> Metabolism Retrofit Development </a>")),
                       br(),
                       br(),
                       em("Disclaimer: None of the views or conslusions drawn in this app are necessarily reflective of US EPA. Work was done as part of Toxicology Research Fellowship contracted by Oak Ridge 
@@ -56,7 +57,7 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                         you to filter plots by the same metrics as found in the Data Exploration page (chemical, biogroup, or both). Curves for these plots were fit using the hill curve function (from tcpl package) and hits in the AR assay 
                         were established using a 4*bmad threshold, shown on the plot. Final hit calls were made to distinguish AR specific chemicals from purely cytotoxic chemicals. This was done using two criteria (1. Hit in AR assay, 2. deltaAC50 
                         from AR assay to cell viability assay > 1). Prior to constructing this app, final hit calls were mapped with chemical structural indicators, called chemotypes. This was done for all chemicals tested with available chemotype 
-                        information (113/128). This dataset is what will be used for chemotype modeling and can be explored in the Data tab within the Modeling page (to note, there are 739 possible chemotype predictors, most chemicals are comprised of
+                        information (113/128). This dataset is what will be used for chemotype modeling and can be explored in the Data tab within the Modeling page (to note, there are 729 possible chemotype predictors, most chemicals are comprised of
                          fewer than 15)."),
                       p("The Modeling page implements the chemotype-hitcall dataset to predict hits in the AR2 assay. The goal of this page is two-fold. 
                         First, you'll be able to visualize through variable importance plots which variables were most important to predicting AR hits. Knowing which chemotypes are responsible for AR antagonist activity would be particularly useful 
@@ -156,16 +157,44 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                    #Modeling Panel
                    tabPanel("Modeling",
                             titlePanel("Chemotype Modeling for AR2 Assay"),
-                      sidebarLayout(
-                      sidebarPanel(
-                        sliderInput("splitProp", strong("Set Proportion of Data to Train On"), min = 0.4, max = 0.85, 0.7, step = 0.05, ticks = FALSE)
-                      , width = 3),
+                      #sidebarLayout(
+                      #sidebarPanel(
+                      #  sliderInput("splitProp", strong("Set Proportion of Data to Train On"), min = 0.4, max = 0.85, 0.7, step = 0.05, ticks = FALSE)
+                      #, width = 3),
                       
                       mainPanel(tabsetPanel(type = "tabs",
-                                            tabPanel("Modeling Info"),
-                                            tabPanel("Model Fitting", tableOutput("treeData"), plotOutput("treeDataPlot")),
+                                            tabPanel("Modeling Info",
+                                                     h3(strong("Overview")),
+                                                     p("Welcome to the modeling page. Here, we will work with the chemotype-hitcall dataset from the AR2 validation set. If you would like to explore the data first, click on the Chemotype Data 
+                                                       tab and look around. 113 of our 128 chemicals tested were able to successfuly be chemotyped using specialized software. This data set was then mapped to the hit calls from the validation screen 
+                                                       that is shown as hit's or non-hits in the Data Visualization page. Each chemotype is a unique predictor in this data set, and the response is binary (0 or 1). If a chemical has a certain chemotype, 
+                                                       the value for that chemotype for that chemical is 1. Most chemicals have a handful of distinct features, but their total chemotype count is typically less than 15. As such, there will be several unsused 
+                                                       predictors due to the limited number of chemicals. In the Chemotype data tab, you will have to option to select and view only the predictors with a value for at least 1 chemical, and from there, you will also have 
+                                                       the ability to use either the full predictor list or the condensed predictor list to fit the models."),
+                                                     h5(strong("Generalized Linear Model")),
+                                                     p("A generalized linear model will be the first of three models fit to this data. These models allow for responses from non-normal distributions such as in logistic regression with data from a binomial distribution. 
+                                                       Logistic regression estimates the probability of success, such as a hit or a non-hit in this app, based on a given dataset of predictor variables. Since the outcome is a probability, the response is bounded between 0 and 1. 
+                                                       In generalized linear models, there is a link function that is used to link the response (hitcall) to the linear function of the parameters. For binary response data, this link 
+                                                       function, called the Logit function, is:"),
+                                                     withMathJax(), 
+                                                     helpText("$$ X \\beta = ln ( \\frac{\\mu}{1- \\mu} )$$"),
+                                                     p("This logit link models the log odds of success as the linear function. Here, we'll deem success to be a hit in the AR assay. One advantage of this model over the others is it's 
+                                                       relative ease of interpretibility. "),
+                                                     h5(strong("Classification Tree")),
+                                                     p("A classification tree will be the second type of model fit to this data. ")
+                                                       
+                                                     
+                                                     
+                                                     ),
+                                            tabPanel("Model Fitting", 
+                                                     br(),
+                                                     selectInput("modeldata", "Select Data To Fit Model On", choices = c("Present Chemotypes Dataset" = "subsetChemotypesB$hitcall", "Full Chemotype Dataset" = "chemotypeModel$hitcall")),
+                                                     sliderInput("split", "Select Proportion Of Data to Train On for Tree-based Models", min = 0.5, max = 0.9, 0.7, step = 0.05),
+                                                     tableOutput("treeData"), plotOutput("treeDataPlot")),
                                             tabPanel("Prediction"),
-                                            tabPanel("Chemotype Data", dataTableOutput("hitsData"))))
-))))
-
+                                            tabPanel("Chemotype Data", 
+                                                     checkboxInput("subsetChemos", strong("Only View Chemotypes Present in Chemical List"), value = FALSE),
+                                                     verbatimTextOutput("displayChemos"),
+                                                     dataTableOutput("hitsData")))))
+))
 
