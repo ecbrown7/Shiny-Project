@@ -655,7 +655,7 @@ observeEvent(input$fitmodels, {
     
     
     output$chemDes <- renderText({
-        if(input$predictChems == 1){"Dichlobenil is an herbicide commonly used to control weeds in gardens, lawns, near ornamental trees, and various other settings. It also controls aquatic (water) weeds such as cattail and purple loosestrife. Dichlobenil stops seed germination, cellulose (cell wall) formation, and growth in plant roots and shoots."}
+        if(input$predictChems == 1){"2,6-Dichlorobenzonitrile is an herbicide commonly used to control weeds in gardens, lawns, near ornamental trees, and various other settings. It also controls aquatic (water) weeds such as cattail and purple loosestrife. Dichlobenil stops seed germination, cellulose (cell wall) formation, and growth in plant roots and shoots."}
         else if(input$predictChems == 2){"Faslodex is a prescription medicine used to treat advanced breast cancer or breast cancer that has spread to other parts of the body (metastatic)."}
         else if(input$predictChems == 3){"4,4'-((1H-1,2,4-triazol-1-yl)methylene)dibenzonitrile  is an aromatase inhibitor used in the treatment of breast cancer."}
         else if(input$predictChems == 4){"2,2,4,4,6,6,8,8-Octamethyl-1,3,5,7,2,4,6,8-tetraoxatetrasilocane is an industrial chemical used as a monomer in the manufacture of polymeric materials, which are widely used in various industrial and/or medical applications, such as breast implants."}
