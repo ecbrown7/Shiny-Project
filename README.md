@@ -1,7 +1,7 @@
 README
 ================
 Evan Brown
-7/27/2022
+8/1/2022
 
 -   [Brief description of the app and its
     purpose.](#brief-description-of-the-app-and-its-purpose)
@@ -9,31 +9,99 @@ Evan Brown
     app.](#a-list-of-packages-needed-to-run-the-app)
 -   [A line of code that would install all the packages
     used.](#a-line-of-code-that-would-install-all-the-packages-used)
--   [Run the app.](#run-the-app)
+-   [Code to run the app.](#code-to-run-the-app)
 
 ### Brief description of the app and its purpose.
 
-This Shiny app does something.
+I created this shiny app for the NCSU ST558 Summer ’22 Final Project.
+This app is a culmination of real data collected by me as part of my
+Research Toxicology Fellowship at the US Environmental Protection
+Agency. I hope this app is able to give you insight into the new
+predictive risk assessment approach the EPA has been implementing for
+the past few years. In 2020, I was put on a team to develop a new assay
+to screen chemicals for androgen receptor (AR) toxicity. In late 2021,
+the assay was developed and I ran a validation screen of 128 chemicals
+(plus 2 control chemicals). Each chemical was evaluated with 11
+cytochrome p450 enzymes (plus 2 control enzymes), then assay endpoints
+were measured (AR activity and cell viability). Each chemical was run in
+dose-response, and the final product was a large, complex study data
+set. Hit calls in the AR assay were made and distinguished from purely
+cytotoxic chemicals. Then, each chemical was run through a chemotyping
+software, developing a second large data set containing structural
+predictors for each chemical. Finally, these two data sets were combined
+into a chemotype-hitcall data set that provides a connection between
+structural chemical features and assay hits. It’s this chemotype-hitcall
+data set that is crucial to the modeling and prediction approach
+demonstrated in this app.
+
+In the About page, I’ll introduce you to the assay, give background, and
+provide links for further information. In the Data Exploration page,
+you’ll be able to filter the raw study data before being mapped to hit
+calls by chemical, biogroup, and both. Then, you’ll be able to save your
+filtered data set to your local machine. In the Data Visualization page,
+you’ll be able to interact with hill-curve scatter plots of the data.
+Selecting different cyp’s will allow you to visualize the role of liver
+metabolism in breaking down drugs inside your body. In particular, the
+chemical Flutamide was able to be shifted dramatically by two cyps. Hit
+calls were made via a series of criteria based on AR and viability data
+and final call is displayed on the AR plots. In the modeling page,
+you’ll be able to visualize the full chemotype-hitcall data set, the
+chemotype-hitcall data set with only present chemotypes included, and a
+low-dimensional version used for modeling the generalized linear model.
+Then, you’ll be able to fit three models, with the Random Forest model
+frequently outperforming the rest. Finally and most exciting, you’ll be
+able to predict androgen receptor hit calls of untested chemicals, view
+chemical descriptions and even have a look at chemical structures.
+Ideally, we’d be able to run these chemicals back through the assay to
+determine how well our model predicted these, but for now we’ll settle
+for the prediction.
+
+In a nutshell, assay data was collected, chemicals were broken down into
+their structural components, then those components were mapped to the
+hit call results in the assay to train models to predict assay hits
+based on chemical features. The ultimate goal of the project and of the
+new EPA approach simulated here was to be able to predict toxicity for
+untested chemicals based on chemical structure. When we were tasked with
+this project, I immediately thought of the idea to do it this way and
+couldn’t let it go. I had discussions with several folks from the lab
+and from higher up to get the green light to tackle this, and I am happy
+with how it’s turned out. I’ve been asked to present this work
+mid-August. However, while completing the project, I realized some
+things were not able to meet the rubric requirements perfectly. I took
+confidence in the open-endedness mentioned there and I hope you’ll see
+the tremendous amount of thought and effort that went in to both trying
+to meet those requirements while also making this app reflective of real
+work taking place that will have an impact on chemical regulatory
+decisions in the future.
 
 ### A list of packages needed to run the app.
 
-``` r
-data.table
-tidyverse
-shiny
-shinythemes
-```
+-shiny  
+-ggplot2  
+-caret  
+-randomForest  
+-gbm  
+-tidyverse  
+-data.table  
+-shinythemes  
+-mathjaxr
 
 ### A line of code that would install all the packages used.
 
 ``` r
-install.packages("data.table", "tidyverse", "shiny")
-library(data.table)
-library(tidyverse)
+install.packages("shiny", "ggplot2", "caret", "randomForest", "gbm", "tidyverse", "data.table", "shinythemes", "mathjaxr")
 library(shiny)
+library(ggplot2)
+library(caret)
+library(randomForest)
+library(gbm)
+library(tidyverse)
+library(data.table)
+library(shinythemes)
+library(mathjaxr)
 ```
 
-### Run the app.
+### Code to run the app.
 
 ``` r
 shiny::runGitHub(repo="Shiny-Project",username = "ecbrown7",ref = "main",subdir = "AR-Shiny-App")
