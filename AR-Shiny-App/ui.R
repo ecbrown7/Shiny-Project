@@ -147,7 +147,11 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                checkboxGroupInput("biogroup","Select Biogroup: ",
                                         choices = c("noRNA","Bgal","CYP1A2","CYP2A6","CYP2B6","CYP2C8","CYP2C9","CYP2C19","CYP2D6","CYP2E1","CYP2E1-WT","CYP2J2","CYP3A4"), selected = c("noRNA", "Bgal")),
                             
-                              checkboxInput("Viability", strong("Show Viability Plots"), value = TRUE), width = 4),
+                              checkboxInput("Viability", strong("Show Viability Plots"), value = TRUE), 
+                              p("Curves for these plots were fit using the hill curve function (from tcpl package). Hits in the AR assay were established using a 4*bmad threshold, shown on the plots. Final hit calls                                    made to distinguish AR specific chemicals from cytotoxic chemicals was done using two criteria: 1. Hit in AR assay, 2. deltaAC50 from AR assay to cell viability assay > 1."),
+                              
+                              width = 4),
+                              
                               
                               mainPanel(plotOutput("plot"), plotOutput("ABplot")))),
                    
@@ -199,23 +203,67 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                                      
                                                      ),
                                             tabPanel("Model Fitting", 
-                                                     br(),
-                                                     selectInput("modeldata", "Select Data To Fit Model On", choices = c("Present Chemotypes Dataset" = "subsetChemotypesB$hitcall", "Full Chemotype Dataset" = "chemotypeModel$hitcall")),
-                                                     sliderInput("split", "Select Proportion Of Data to Train On for Tree-based Models", min = 0.5, max = 0.9, 0.7, step = 0.05),
-                                                     tableOutput("treeData"), plotOutput("treeDataPlot")),
+                                                     sidebarLayout(sidebarPanel(
+                                                       
+                                                     selectInput("modeldata", "Select Data(Predictors) To Fit Model On", choices = c("Present Chemotypes Dataset" = "subsetChemotypesB$hitcall", "Full Chemotype Dataset" = "chemotypeModel$hitcall")),
+                                                     p(em("This will control the proportion of data to train the model on. Reported fit statistics will be indicative of each models performance on the testing set. In general, a higher training proportion may overfit data.")),
+                                                     sliderInput("split", "Select Proportion Of Data for Training", min = 0.5, max = 0.9, 0.7, step = 0.05),
+                                                     p(em("These will control cross-validation settings of the tree models. Higher settings will require more computational time.")),
+                                                     sliderInput("cvnum", "Select Cross Validation Fold for Tree Models", min = 2, max = 10, 5, step = 1),
+                                                     sliderInput("cvrep", "Select Cross Validation Repetitions for Tree Models", min = 1, max = 3, 2, step = 1),
+                                                     p(em("This button will fit all 3 models according to your input. Once fit, adjustments can be made live without having to press again. There may be some lag time for computing models.")),
+                                                     actionButton("fitmodels", "Fit Models")
+                                                     ),
+                                                     
+                                                     
+                                                     mainPanel(
+                                                       
+                                                       h4(strong("Generalized Linear Model")),
+                                                       tableOutput("glm"),
+                                                       br(),
+                                                       h4(strong("Classification Tree Model")),
+                                                       tableOutput("basictreeData"),
+                                                       br(),
+                                                       h4(strong("Random Forest Model")),
+                                                     fluidPage(splitLayout(
+                                                       tableOutput("treeData"), plotOutput("treeDataPlot")))
+                                                     
+                                                    
+                                                     ))),
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
                                             tabPanel("Prediction",
                                                      sidebarLayout(sidebarPanel(
                                                        h4(strong("Prediction Overview")),
-                                                       p("Welcome to the prediction tab. In this tab, we will use a model fit to chemotype-hitcall data to predict future hitcalls. 
-                                                         As a result of chemotyping software being spohisticated and not readily linked with R, functionality of predicting your favorite chemical will not be included. However, I have provided a list of several chemicals to chose from 
-                                                         that were not included in this testing set. Click around to each chemical and look at their predicted hitcall for the AR2 assay. Remember, if a chemical is predicted as a hit, that implies the chemical is more likely than not an 
-                                                         androgen receptor antagonist (i.e. an endocrine disrupter). However, also remember that this model was fit on 113 chemicals with not every possible chemotype being featured in that list. Some chemicals may contain chemotypes 
+                                                       p("In this tab, you'll be able to use a model to predict future hitcalls. As a result of chemotyping software being spohisticated and not readily linked with R, functionality of predicting your favorite chemical will not be included. However, I have provided a list of several chemotyped chemicals to chose from that were not included in this testing set. Click around to each chemical and look at their predicted hitcall for the AR2 assay."),
+                                                       p(em("Selet one of the pre-chemotyped chemicals.")),
+                                                      selectInput("predictChems", "Select Chemical to Predict", choices = c("Dichlobenil"="1","Faslodex"="2","4,4'-((1H-1,2,4-triazol-1-yl)methylene)dibenzonitrile"="3","2,2,4,4,6,6,8,8-Octamethyl-1,3,5,7,2,4,6,8-tetraoxatetrasilocane"="4","Ronilan"='5')),
+                                                      p(em("Each model type has been optimized for use of prediction in this tab. Select the type of model you would like to predict with.")),
+                                                      selectInput("modelpredict", "Select Model Type for Prediction", choices = c("Random Forest", "Classification Tree", "Generalized Linear Model"), selected = "Random Forest"),
+                                                      
+                                                      p(
+                                                        "If a chemical is predicted as a hit, that implies the chemical is more likely than not an 
+                                                         androgen receptor antagonist (i.e. an endocrine disrupter). However, also be aware that this model was fit on 113 chemicals with not every possible chemotype being featured in that list. Some chemicals may contain chemotypes 
                                                          that impact the androgen receptor but were not included in the dataset and thus may predict as a non-hit. For all cases, the solution to this issue is to screen more chemicals, generate more chemotypes, and fit models based on a much 
-                                                         larger dataset. Check toxicology journals next summer (2023) for an update on that very solution."),
-                                                      selectInput("predictChems", "Select Chemical to Predict", choices = c("1","2","3","4",'5')),
+                                                         larger dataset. Check toxicology journals next summer (2023) for an update on that very solution."
+                                                      ),
+                                                      
                                                       width = 4),
                                                       
-                                                      mainPanel(textOutput("prediction"))
+                                                      mainPanel(
+                                                        h4(strong("Your Chemical is Predicted as a: ")),
+                                                        textOutput("prediction"),
+                                                        
+                                                        br(),
+                                                        h4("Chemical Description:"),
+                                                        textOutput("chemDes"),
+                                                        #img(src=textOutput("chemImage"), align = "center", width = 150))
+                                                        imageOutput("chemImage"))
                                                        
                                                      )),
                                             tabPanel("Chemotype Data", 

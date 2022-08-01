@@ -10,19 +10,19 @@ library(gbm)
 #Reading in data, modifying data, creating master file called "study" that contains all information in AR2 Antagonist Ref 128 Study
 
 # read in dpid_128 chem plate map#
-dpid.128 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/validation_chem.csv", stringsAsFactors = F, skipNul = T)
+dpid.128 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/validation_chem.csv", stringsAsFactors = F, skipNul = T)
 dpid.128 = as.data.table(dpid.128)
 
 # read in control plate map#
-control = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/antagonist_control_chem.csv", stringsAsFactors = F, skipNul = T)
+control = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/antagonist_control_chem.csv", stringsAsFactors = F, skipNul = T)
 control = as.data.table(control)
 
 # read in cohort dispense maps#
-dispmap1 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_1.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap1 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_1.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap1$cohort = 1
-dispmap2 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_2.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap2 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_2.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap2$cohort = 2
-dispmap3 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_3.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap3 = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_3.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap3$cohort = 3
 
 dispmap = rbind(dispmap1, dispmap2, dispmap3)
@@ -38,7 +38,7 @@ dispmap$stock.mm = ifelse(dispmap$Source.Plate == "DPID_128", dpid.128$stock.mM[
                           ifelse(dispmap$Source.Plate == "CNTRL", control$stock.mM[match(dispmap$Source.Well, control$well)], NA))
 
 # read in filemap #
-filemap = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/AR_Antagonist128_Met_filemap.csv", stringsAsFactors = F, skipNul = T)
+filemap = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/AR_Antagonist128_Met_filemap.csv", stringsAsFactors = F, skipNul = T)
 filemap = data.table(filemap)
 
 ### map data data ###
@@ -47,7 +47,7 @@ filemap = filemap[!TR %in% 2874:2913,]
 study = NULL
 for (j in 1:nrow(filemap)){
     
-    file.name = paste("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/data/TRno", filemap$TR[j], ".CSV", sep = "")
+    file.name = paste("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/data/TRno", filemap$TR[j], ".CSV", sep = "")
     sub = read.csv(file.name, stringsAsFactors = F, skipNul = T)
     sub$X = NULL
     names(sub) = c("rowi", "coli", "sample", "RLU")
@@ -95,11 +95,11 @@ AR2study_complete = cmpd1[assay == "AR",]
 
 #plot dose-response AR data#
 #Source code written to plot hill curves through EPA offline pipeline
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
+source("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
 
 hill_curve = function(hill_tp, hill_ga, hill_gw, lconc){
     return(hill_tp/(1+10^((hill_ga - lconc)*hill_gw)))}
@@ -130,12 +130,13 @@ ABplotting$resp = ABplotting$nval
 
 ##########For modeling and hit calls
 #read in chemotypes
-chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+chemotypes = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
 colnames(chemotypes)[1] = "Chemical"
 chemotypes$hitcall <- as.factor(chemotypes$hitcall)
 chemotypeModel <- chemotypes[,-1]
 hitsData <- chemotypes[chemotypes$hitcall == 1,]
-sample_chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/sample_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+sample_chemotypes = read.csv("C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/ar_shiny_data/sample_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+sample_chemotypes <- sample_chemotypes[-6,]
 subsetChemotypes <- chemotypes[, colSums(chemotypes != 0) > 0]
 subsetChemotypesB <- subsetChemotypes[,-1]
 subsetChemotypesC <- subsetChemotypesB[c(47, 67, 73, 88,89),-1]
@@ -261,11 +262,17 @@ shinyServer(function(input, output) {
                               color = userPalette[k], 
                               size=1) 
             k = k + 1L
-        }
+        } 
         
         if(input$chemName %in% hitsData$Chemical){curves_plot_hit <- curves_plot  + 
-            annotate("text", x = -3.1, y = 115, label = "AR Hit" , color="red", size=7, fontface="bold")
+            annotate("text", x = -3.1, y = 115, label = "AR Hit" , color="red", size=6, fontface="bold")
             curves_plot_hit}
+        else if(input$chemName %in% c("BICAL")){curves_plot_cntrl <- curves_plot  + 
+            annotate("text", x = -1.75, y = 115, label = "AR Control" , color="#F5B041", size=6, fontface="bold")
+        curves_plot_cntrl}
+        else if(input$chemName %in% c("DCLN")){curves_plot_cntrl2 <- curves_plot  + 
+            annotate("text", x = -1.4, y = 115, label = "Viability Control" , color="#F5B041", size=6, fontface="bold")
+        curves_plot_cntrl2}
         else{curves_plot}   
         
     }, width = 800, height = 400)
@@ -357,12 +364,13 @@ shinyServer(function(input, output) {
     })
     
     output$displayChemos <- renderText({
-      if(input$subsetChemos == 1){paste0("The number of chemotype predictors shown is: ", ncol(subsetChemotypes))}
-      else {paste0("The number of chemotype predictors shown is: ", ncol(chemotypes))}
+      if(input$subsetChemos == 1){paste0("The number of chemotype predictors shown is: ", ncol(subsetChemotypes) - 2)}
+      else {paste0("The number of chemotype predictors shown is: ", ncol(chemotypes) - 2)}
       
     })
     
-    
+   ############################################################################################################################################## 
+observeEvent(input$fitmodels, {    
     
     output$treeData <- renderTable({
         
@@ -502,15 +510,117 @@ shinyServer(function(input, output) {
 }, width = 600, height = 500)
     
     
+    output$glm <- renderTable({
+        
+        #Set fixed sampling 
+        set.seed(18)
+        
+        #splitting data using createDataPartition from caret package
+        index <- createDataPartition(y = subsetChemotypesB$hitcall, p = input$split, list = FALSE)
+        training <- subsetChemotypesB[index,]
+        testing <- subsetChemotypesB[-index,]   
+        
+        #Fit Generalized linear model
+        GLMfit <- glm(hitcall ~., data = training, family = "binomial") 
+        GLMfit
+        prediction <- data.frame(predict(GLMfit, newdata = testing, type = "response"))
+        prediction <- prediction %>% mutate(testing$hitcall)
+        colnames(prediction) = c("Probability", "Reference")
+        prediction$Prediction <- ifelse(prediction$Probability <= 0.5, 0,1)
+        as.factor(prediction$Reference)
+        as.factor(prediction$Prediction)
+        c <- data.table(postResample(prediction$Prediction, prediction$Reference))
+        c2 <- pivot_wider(c, names_from = V1, values_from = V1)
+        colnames(c2) = c("Accuracy", "Kappa")
+        rownames(c2) = NULL
+        c2
+    })
+    
+    
+    
+    
+    output$basictreeData <- renderTable({
+        
+        
+        if(input$modeldata == "subsetChemotypesB$hitcall"){
+            
+            #Set fixed sampling 
+            set.seed(18)
+            
+            #splitting data using createDataPartition from caret package
+            index <- createDataPartition(y = subsetChemotypesB$hitcall, p = input$split, list = FALSE)
+            training <- subsetChemotypesB[index,]
+            testing <- subsetChemotypesB[-index,]
+            ####
+            
+            #Classification Tree ---
+            tree_fit <- train(hitcall ~ ., data = training,
+                              method = "rpart", 
+                              trControl = trainControl(method = "repeatedcv", number = input$cvnum, repeats = input$cvrep),
+                              tuneGrid = data.frame(cp = seq(0,0.1,by = 0.001)))
+            
+            #Predict
+            tree_pred <- predict(tree_fit, newdata = testing)
+            #Evaluate predicted with observed
+            treeacc <- postResample(tree_pred, testing$hitcall)
+            #look at confusion matrix
+            b <- confusionMatrix(tree_pred, testing$hitcall)
+            b1 <- data.table(b$table)
+            accPre <- b$overall
+            acc <- c("Accuracy", accPre[1])
+            b2 <- b1 %>% rbind(acc, fill = TRUE)
+            colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
+            
+            b2
+        }
+        
+        else if(input$modeldata == "chemotypeModel$hitcall"){
+            
+            #Set fixed sampling 
+            set.seed(18)
+            
+            #splitting data using createDataPartition from caret package
+            index <- createDataPartition(y = chemotypeModel$hitcall, p = input$split, list = FALSE)
+            training <- chemotypeModel[index,]
+            testing <- chemotypeModel[-index,]
+            ####
+            
+            #Classification Tree ---
+            tree_fit <- train(hitcall ~ ., data = training,
+                              method = "rpart", 
+                              trControl = trainControl(method = "repeatedcv", number = input$cvnum, repeats = input$cvrep),
+                              tuneGrid = data.frame(cp = seq(0,0.1,by = 0.001)))
+            
+            #Predict
+            tree_pred <- predict(tree_fit, newdata = testing)
+            #Evaluate predicted with observed
+            treeacc <- postResample(tree_pred, testing$hitcall)
+            #look at confusion matrix
+            b <- confusionMatrix(tree_pred, testing$hitcall)
+            b1 <- data.table(b$table)
+            accPre <- b$overall
+            acc <- c("Accuracy", accPre[1])
+            b2 <- b1 %>% rbind(acc, fill = TRUE)
+            colnames(b2) = c("Prediction", "Reference", "Frequency", "Model Accuracy")
+            
+            b2
+        }
+    })
+
+})
+    
+    
     output$prediction <- renderText({
         
         #Set fixed sampling 
         set.seed(18)
         
         #splitting data using createDataPartition from caret package
-        index <- createDataPartition(y = subsetChemotypesB$hitcall, p = .7, list = FALSE)
+        index <- createDataPartition(y = subsetChemotypesB$hitcall, p = .75, list = FALSE)
         training <- subsetChemotypesB[index,]
         testing <- subsetChemotypesB[-index,]
+        
+        if(input$modelpredict == "Random Forest"){
         ##Fit random forest model##
         rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
         
@@ -518,24 +628,64 @@ shinyServer(function(input, output) {
         set.seed(18)
         
         value <- as.numeric(input$predictChems)
-        rfPred2 <- predict(rfFit2, newdata = data.frame(subsetChemotypesC[value,]))
+        rfPred2 <- predict(rfFit2, newdata = data.frame(sample_chemotypes[value,]))
         rfPred2 <- data.frame(rfPred2)
         colnames(rfPred2) = "Prediction"
         rfPred3 <- if(rfPred2$Prediction == 0){rfPred3 = "Non-hit"} else if(rfPred2$Prediction == 1){rfPred3 = "Hit"}
-        print(rfPred3)
+        print(rfPred3)}
+        
+        else if(input$modelpredict == "Classification Tree"){
 
+        #Classification Tree ---
+        tree_fit <- train(hitcall ~ ., data = training,
+                              method = "rpart", 
+                              trControl = trainControl(method = "repeatedcv", number = 3, repeats = 2),
+                              tuneGrid = data.frame(cp = seq(0,0.1,by = 0.001)))
+            
+        set.seed(18)
+        
+        value <- as.numeric(input$predictChems)
+        treePred2 <- predict(tree_fit, newdata = data.frame(sample_chemotypes[value,]))
+        treePred2 <- data.frame(treePred2)
+        colnames(treePred2) = "Prediction"
+        treePred3 <- if(treePred2$Prediction == 0){treePred3 = "Non-hit"} else if(treePred2$Prediction == 1){treePred3 = "Hit"}
+        print(treePred3)}
+        
     })
+    
+    
+    output$chemDes <- renderText({
+        if(input$predictChems == 1){"Dichlobenil is an herbicide commonly used to control weeds in gardens, lawns, near ornamental trees, and various other settings. It also controls aquatic (water) weeds such as cattail and purple loosestrife. Dichlobenil stops seed germination, cellulose (cell wall) formation, and growth in plant roots and shoots."}
+        else if(input$predictChems == 2){"Faslodex is a prescription medicine used to treat advanced breast cancer or breast cancer that has spread to other parts of the body (metastatic)."}
+        else if(input$predictChems == 3){"4,4'-((1H-1,2,4-triazol-1-yl)methylene)dibenzonitrile  is an aromatase inhibitor used in the treatment of breast cancer."}
+        else if(input$predictChems == 4){"2,2,4,4,6,6,8,8-Octamethyl-1,3,5,7,2,4,6,8-tetraoxatetrasilocane is an industrial chemical used as a monomer in the manufacture of polymeric materials, which are widely used in various industrial and/or medical applications, such as breast implants."}
+        else if(input$predictChems == 5){"Ronilan is a fungicide commonly used in the wine industry."}
+        
+    })
+    
+    
+   # output$chemImage <- renderText({
+   #    if(input$predictChems == 1){'dichlobenil.JPG'}
+   #   else if(input$predictChems == 2){'faslodex.JPG'}
+   #  else if(input$predictChems == 3){'letro.JPG'}
+   # else if(input$predictChems == 4){'oct1.JPG'}
+   # else if(input$predictChems == 5){'ronilan.JPG'}  
+    
+   # })
+    
+    output$chemImage <- renderImage({
+       if(input$predictChems == 1){list(src = 'C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/dichlobenil.JPG')}
+       else if(input$predictChems == 2){list(src = 'C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/faslodex.JPG')}
+        else if(input$predictChems == 3){list(src = 'C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/letro.JPG')}
+        else if(input$predictChems == 4){list(src = 'C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/oct1.JPG')}
+        else if(input$predictChems == 5){list(src = 'C:/Users/Ebrown08/OneDrive - Environmental Protection Agency (EPA)/Profile/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/ronilan.JPG')}  
+        
+    }, deleteFile = FALSE)
     
     
 })
 
 
-
-
-#GLMfit <- glm(hitcall ~., data = chemotypeModel, family = "binomial")
-
-#prediction <- data.frame(predict(GLMfit, newdata = sample_chemotypes))
-#colnames(prediction) = "Prob"
 
 
 
