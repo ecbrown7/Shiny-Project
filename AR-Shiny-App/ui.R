@@ -165,13 +165,14 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                       mainPanel(tabsetPanel(type = "tabs",
                                             tabPanel("Modeling Info",
                                                      h3(strong("Overview")),
-                                                     p("Welcome to the modeling page. Here, we will work with the chemotype-hitcall dataset from the AR2 validation set. If you would like to explore the data first, click on the Chemotype Data 
+                                                     h5("Welcome to the modeling page. Here, we will work with the chemotype-hitcall dataset from the AR2 validation set. If you would like to explore the data first, click on the Chemotype Data 
                                                        tab and look around. 113 of our 128 chemicals tested were able to successfuly be chemotyped using specialized software. This data set was then mapped to the hit calls from the validation screen 
                                                        that is shown as hit's or non-hits in the Data Visualization page. Each chemotype is a unique predictor in this data set, and the response is binary (0 or 1). If a chemical has a certain chemotype, 
                                                        the value for that chemotype for that chemical is 1. Most chemicals have a handful of distinct features, but their total chemotype count is typically less than 15. As such, there will be several unsused 
-                                                       predictors due to the limited number of chemicals. In the Chemotype data tab, you will have to option to select and view only the predictors with a value for at least 1 chemical, and from there, you will also have 
+                                                       predictors due to the limited number of chemicals. In the Chemotype Data tab, you will have to option to select and view only the predictors with a value for at least 1 chemical, and from there, you will also have 
                                                        the ability to use either the full predictor list or the condensed predictor list to fit the models."),
-                                                     h5(strong("Generalized Linear Model")),
+                                                     br(),
+                                                     h4(strong("Generalized Linear Models")),
                                                      p("A generalized linear model will be the first of three models fit to this data. These models allow for responses from non-normal distributions such as in logistic regression with data from a binomial distribution. 
                                                        Logistic regression estimates the probability of success, such as a hit or a non-hit in this app, based on a given dataset of predictor variables. Since the outcome is a probability, the response is bounded between 0 and 1. 
                                                        In generalized linear models, there is a link function that is used to link the response (hitcall) to the linear function of the parameters. For binary response data, this link 
@@ -179,9 +180,20 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                                      withMathJax(), 
                                                      helpText("$$ X \\beta = ln ( \\frac{\\mu}{1- \\mu} )$$"),
                                                      p("This logit link models the log odds of success as the linear function. Here, we'll deem success to be a hit in the AR assay. One advantage of this model over the others is it's 
-                                                       relative ease of interpretibility. "),
-                                                     h5(strong("Classification Tree")),
-                                                     p("A classification tree will be the second type of model fit to this data. ")
+                                                       relative ease of interpretibility. However, this type of model should really have uncorrelated predictors, but in this type of prediction analysis, many of the predictors may be correlated. In addition, the predictive power 
+                                                       is generally lower than tree-based methods."),
+                                                     br(),
+                                                     h4(strong("Classification Trees")),
+                                                     p("A classification tree will be the second type of model fit to this data. The goal of classification trees is to classify group membership, where the most prevelant class is used as prediction. These types of models are 
+                                                       advantageous in that they do not require normalization of data, and that missing values do not significantly affect the process of tree building. In addition, the concept is typically easy to understand and explain. However, 
+                                                       these models often require more time to train the model and increase complexity over other methods. Finally, sometimes small changes in the data can cause large shifts in tree structure, potentially resulting in instability."),
+                                                     br(),
+                                                     h4(strong("Random Forests")),
+                                                     p("Random forest are an extension of bagged tree modeling. Bagged tree models use bootstrap samples to fit several trees and average over all of those samples. By doing this, the model chosen is tuned to multiple resamples of 
+                                                       the data and thus generalizes better to give better prediction on new data than the single tree fit. In random forest models, this same approach is taken but instead of fitting each new tree 
+                                                       with all the predictors, a random selection of only about 2/3 of predictors are used. This feature of random variable selection lends to an uncorrelated forest of decision trees. In comparison to a standard decision tree, 
+                                                       random forests are more complex and thus lose some interpretibality and require more computational time to fit, but their main advantage is a significantly improved prediction. Random forests also help reduce the risk of 
+                                                       overfitting and provide additional flexibility to make it easier to determine feature importance.")
                                                        
                                                      
                                                      
@@ -191,7 +203,21 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                                      selectInput("modeldata", "Select Data To Fit Model On", choices = c("Present Chemotypes Dataset" = "subsetChemotypesB$hitcall", "Full Chemotype Dataset" = "chemotypeModel$hitcall")),
                                                      sliderInput("split", "Select Proportion Of Data to Train On for Tree-based Models", min = 0.5, max = 0.9, 0.7, step = 0.05),
                                                      tableOutput("treeData"), plotOutput("treeDataPlot")),
-                                            tabPanel("Prediction"),
+                                            tabPanel("Prediction",
+                                                     sidebarLayout(sidebarPanel(
+                                                       h4(strong("Prediction Overview")),
+                                                       p("Welcome to the prediction tab. In this tab, we will use a model fit to chemotype-hitcall data to predict future hitcalls. 
+                                                         As a result of chemotyping software being spohisticated and not readily linked with R, functionality of predicting your favorite chemical will not be included. However, I have provided a list of several chemicals to chose from 
+                                                         that were not included in this testing set. Click around to each chemical and look at their predicted hitcall for the AR2 assay. Remember, if a chemical is predicted as a hit, that implies the chemical is more likely than not an 
+                                                         androgen receptor antagonist (i.e. an endocrine disrupter). However, also remember that this model was fit on 113 chemicals with not every possible chemotype being featured in that list. Some chemicals may contain chemotypes 
+                                                         that impact the androgen receptor but were not included in the dataset and thus may predict as a non-hit. For all cases, the solution to this issue is to screen more chemicals, generate more chemotypes, and fit models based on a much 
+                                                         larger dataset. Check toxicology journals next summer (2023) for an update on that very solution."),
+                                                      selectInput("predictChems", "Select Chemical to Predict", choices = c("1","2","3","4",'5')),
+                                                      width = 4),
+                                                      
+                                                      mainPanel(textOutput("prediction"))
+                                                       
+                                                     )),
                                             tabPanel("Chemotype Data", 
                                                      checkboxInput("subsetChemos", strong("Only View Chemotypes Present in Chemical List"), value = FALSE),
                                                      verbatimTextOutput("displayChemos"),

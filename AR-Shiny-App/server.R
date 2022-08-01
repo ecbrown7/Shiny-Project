@@ -138,6 +138,7 @@ hitsData <- chemotypes[chemotypes$hitcall == 1,]
 sample_chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/sample_chemotypes.csv", stringsAsFactors = F, skipNul = T)
 subsetChemotypes <- chemotypes[, colSums(chemotypes != 0) > 0]
 subsetChemotypesB <- subsetChemotypes[,-1]
+subsetChemotypesC <- subsetChemotypesB[c(47, 67, 73, 88,89),-1]
 ###########
 
 
@@ -499,6 +500,32 @@ shinyServer(function(input, output) {
       
       }
 }, width = 600, height = 500)
+    
+    
+    output$prediction <- renderText({
+        
+        #Set fixed sampling 
+        set.seed(18)
+        
+        #splitting data using createDataPartition from caret package
+        index <- createDataPartition(y = subsetChemotypesB$hitcall, p = .7, list = FALSE)
+        training <- subsetChemotypesB[index,]
+        testing <- subsetChemotypesB[-index,]
+        ##Fit random forest model##
+        rfFit2 <- randomForest(hitcall ~ ., data = training, mtry = (ncol(training)/3), ntree = 100, importance = TRUE)
+        
+        ##Random Forest prediction
+        set.seed(18)
+        
+        value <- as.numeric(input$predictChems)
+        rfPred2 <- predict(rfFit2, newdata = data.frame(subsetChemotypesC[value,]))
+        rfPred2 <- data.frame(rfPred2)
+        colnames(rfPred2) = "Prediction"
+        rfPred3 <- if(rfPred2$Prediction == 0){rfPred3 = "Non-hit"} else if(rfPred2$Prediction == 1){rfPred3 = "Hit"}
+        print(rfPred3)
+
+    })
+    
     
 })
 
