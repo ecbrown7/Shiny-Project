@@ -10,19 +10,19 @@ library(gbm)
 #Reading in data, modifying data, creating master file called "study" that contains all information in AR2 Antagonist Ref 128 Study
 
 # read in dpid_128 chem plate map#
-dpid.128 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/validation_chem.csv", stringsAsFactors = F, skipNul = T)
+dpid.128 = read.csv("../ar_shiny_data/validation_chem.csv", stringsAsFactors = F, skipNul = T)
 dpid.128 = as.data.table(dpid.128)
 
 # read in control plate map#
-control = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/antagonist_control_chem.csv", stringsAsFactors = F, skipNul = T)
+control = read.csv("../ar_shiny_data/antagonist_control_chem.csv", stringsAsFactors = F, skipNul = T)
 control = as.data.table(control)
 
 # read in cohort dispense maps#
-dispmap1 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_1.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap1 = read.csv("../ar_shiny_data/valid_ar_antag_cohort_1.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap1$cohort = 1
-dispmap2 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_2.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap2 = read.csv("../ar_shiny_data/valid_ar_antag_cohort_2.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap2$cohort = 2
-dispmap3 = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/valid_ar_antag_cohort_3.map.csv", stringsAsFactors = F, skipNul = T)
+dispmap3 = read.csv("../ar_shiny_data/valid_ar_antag_cohort_3.map.csv", stringsAsFactors = F, skipNul = T)
 dispmap3$cohort = 3
 
 dispmap = rbind(dispmap1, dispmap2, dispmap3)
@@ -38,7 +38,7 @@ dispmap$stock.mm = ifelse(dispmap$Source.Plate == "DPID_128", dpid.128$stock.mM[
                           ifelse(dispmap$Source.Plate == "CNTRL", control$stock.mM[match(dispmap$Source.Well, control$well)], NA))
 
 # read in filemap #
-filemap = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/AR_Antagonist128_Met_filemap.csv", stringsAsFactors = F, skipNul = T)
+filemap = read.csv("../ar_shiny_data/AR_Antagonist128_Met_filemap.csv", stringsAsFactors = F, skipNul = T)
 filemap = data.table(filemap)
 
 ### map data data ###
@@ -47,7 +47,7 @@ filemap = filemap[!TR %in% 2874:2913,]
 study = NULL
 for (j in 1:nrow(filemap)){
     
-    file.name = paste("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/data/TRno", filemap$TR[j], ".CSV", sep = "")
+    file.name = paste("../ar_shiny_data/data/TRno", filemap$TR[j], ".CSV", sep = "")
     sub = read.csv(file.name, stringsAsFactors = F, skipNul = T)
     sub$X = NULL
     names(sub) = c("rowi", "coli", "sample", "RLU")
@@ -95,11 +95,11 @@ AR2study_complete = cmpd1[assay == "AR",]
 
 #plot dose-response AR data#
 #Source code written to plot hill curves through EPA offline pipeline
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplFit.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjCnst.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjHill.R")
-source("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/tcplObjGnls.R")
+source("../ar_shiny_data/tcplFit.R")
+source("../ar_shiny_data/tcpl_Fit_Lite_Sample_Data.R")
+source("../ar_shiny_data/tcplObjCnst.R")
+source("../ar_shiny_data/tcplObjHill.R")
+source("../ar_shiny_data/tcplObjGnls.R")
 
 hill_curve = function(hill_tp, hill_ga, hill_gw, lconc){
     return(hill_tp/(1+10^((hill_ga - lconc)*hill_gw)))}
@@ -130,17 +130,17 @@ ABplotting$resp = ABplotting$nval
 
 ##########For modeling and hit calls
 #read in chemotypes
-chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+chemotypes = read.csv("../ar_shiny_data/ref_chemotypes.csv", stringsAsFactors = F, skipNul = T)
 colnames(chemotypes)[1] = "Chemical"
 chemotypes$hitcall <- as.factor(chemotypes$hitcall)
 chemotypeModel <- chemotypes[,-1]
 hitsData <- chemotypes[chemotypes$hitcall == 1,]
-sample_chemotypes = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/sample_chemotypes.csv", stringsAsFactors = F, skipNul = T)
+sample_chemotypes = read.csv("../ar_shiny_data/sample_chemotypes.csv", stringsAsFactors = F, skipNul = T)
 sample_chemotypes <- sample_chemotypes[-6,]
 subsetChemotypes <- chemotypes[, colSums(chemotypes != 0) > 0]
 subsetChemotypesB <- subsetChemotypes[,-1]
 subsetChemotypesC <- subsetChemotypesB[c(47, 67, 73, 88,89),-1]
-chemoHist = read.csv("/Users/EvanBrown/Desktop/ST558/Shiny-Project/ar_shiny_data/chemoHist.csv", stringsAsFactors = F, skipNul = T)
+chemoHist = read.csv("../ar_shiny_data/chemoHist.csv", stringsAsFactors = F, skipNul = T)
 
 ######Creating list of most frequent chemotypes######
 #testg <- ggplot(chemoHist, aes(y = chemoHist$chemonum, x = chemoHist$numchemos)) + geom_histogram(stat = "identity") + 
@@ -757,11 +757,11 @@ observeEvent(input$fitmodels, {
     })
     
     output$chemImage <- renderImage({
-       if(input$predictChems == 1){list(src = '/Users/EvanBrown/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/dichlobenil.JPG')}
-       else if(input$predictChems == 2){list(src = '/Users/EvanBrown/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/faslodex.JPG')}
-        else if(input$predictChems == 3){list(src = '/Users/EvanBrown/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/letro.JPG')}
-        else if(input$predictChems == 4){list(src = '/Users/EvanBrown/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/oct1.JPG')}
-        else if(input$predictChems == 5){list(src = '/Users/EvanBrown/Desktop/ST558/Shiny-Project/AR-Shiny-App/www/ronilan.JPG')}  
+       if(input$predictChems == 1){list(src = 'www/dichlobenil.JPG')}
+       else if(input$predictChems == 2){list(src = 'www/faslodex.JPG')}
+        else if(input$predictChems == 3){list(src = 'www/letro.JPG')}
+        else if(input$predictChems == 4){list(src = 'www/oct1.JPG')}
+        else if(input$predictChems == 5){list(src = 'www/ronilan.JPG')}  
         
     }, deleteFile = FALSE)
     
