@@ -89,7 +89,7 @@ decisions in the future.
 ### A line of code that would install all the packages used.
 
 ``` r
-install.packages("shiny", "ggplot2", "caret", "randomForest", "gbm", "tidyverse", "data.table", "shinythemes", "mathjaxr")
+install.packages(c("shiny", "ggplot2", "caret", "randomForest", "gbm", "tidyverse", "data.table", "shinythemes", "mathjaxr"))
 library(shiny)
 library(ggplot2)
 library(caret)
