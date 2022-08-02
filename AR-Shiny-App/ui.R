@@ -37,17 +37,17 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                         resulting in developmental and reproductive problems. Based on this and other evidence, congress passed the Food Quality and Protection Act (FQPA) that requires EPA to screen pesticide chemicals 
                         for their potential to produce effects similar to those by the female hormones (estrogen) in humans. Fast forward several years and those chemicals have become of ever increasing concern and are now labeled
                         Endocrine Disrupting Chemicals (EDCs), as they not only effect the estrogen receptor, but also the androgen receptor. A tremendous amount of progress was made during those years in the early 21st century, 
-                        but a mountain of over 10,000 chemicals in commerce have still evaded serious evaluation and to this day remain an unsolved challenge. However, in 2015, EPA announced the use of cutting-edge technology 
+                        but a mountain of over 10,000 chemicals in commerce have still evaded serious evaluation, and to this day remain an unsolved challenge. However, in 2015, EPA announced the use of cutting-edge technology 
                         including high-throughput animal-free assays and integrated computational models that would shift the approach from a reactive chemical assessment standpoint, to a predictive one."),
                       p("There are many laboratories, including the Simmons Laboratory at EPA in Research Triangle Park, that work to develop new endocrine-focused high throughput assays to provide data streams 
-                        for computational models. The goal of this work is to develop assays that can screen thousands of chemicals in a relatively short amount of time (less than 1 year), build predictive models based on chemical features (chemotypes) 
-                        from the results of the assay screen, and use that model to categorize future chemicals into risk bins, where new high risk chemicals can be prioritized for serious toxicological evaluation. 
-                        While the estrogen model was first of it's kind to gain exposure, the androgen model is close behind and of equivalent importance. The Androgen model was originally built on the back of four indespensible assay types, 
-                        one of which was protein homodimerization assays. When several streams of data for this assay type became unavailable for future use, the computational modeling team needed an internalized replacement for 
-                        collecting data on new chemicals going forward. This is where our laboratory stepped in and began developing a replacement assay in 2020 that has now been completed and validated. This app is the validation data for this assay."),
+                        for computational models. The goal of this work is to develop assays that can screen and generate data on thousands of chemicals in a relatively short amount of time (less than 1 year), build predictive models based on chemical features (chemotypes), 
+                        and use that model to categorize future chemicals into risk bins, where new high risk chemicals can be prioritized for more rigorous toxicological evaluation. 
+                        While the estrogen model was first of it's kind to gain exposure, the androgen model is close behind and of equivalent importance. The androgen model was originally built on the back of four indespensible assay types, 
+                        one of which was protein homodimerization assays. When streams of data for this assay type became unavailable, the computational modeling team needed an internalized replacement for 
+                        collecting data on new chemicals going forward. This is where our laboratory stepped in and began developing a replacement assay in 2020 that has now been completed and validated. This app contains the validation data for this assay."),
                       
                       h3(strong("Purpose")),
-                      p("This Shiny App is a user friendly way to explore real-life validation data for a novel androgen receptor chemical screening assay (AR2 assay) developed at the US Environmental Protection Agency. Rather than present 
+                      p("This Shiny App is a user friendly way to explore real-life validation data for a novel androgen receptor chemical screening assay (AR2 assay) developed at the US EPA. Rather than present 
                         the data on paper, this shiny app gives you the ability to interact with the work, explore the plots for each chemical and biogroup, then navigate modeling this data and try some predictions. This app has 
                         three pages aside from this introduction, each with a distinct purpose."),
                       p("The Data Exploration page will allow you to scroll through the complete data set or view selected columns that can trim some unnecesary variables for plotting. 
@@ -55,24 +55,26 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                         unfiltered data set that appears on default."),
                       p("The Data Visualization page is a place to view plots of the data. Both the AR assay and cell viability plots are shown by default, but you'll be able to select AR only if desired. This page also allows 
                         you to filter plots by the same metrics as found in the Data Exploration page (chemical, biogroup, or both). Curves for these plots were fit using the hill curve function (from tcpl package) and hits in the AR assay 
-                        were established using a 4*bmad threshold, shown on the plot. Final hit calls were made to distinguish AR specific chemicals from purely cytotoxic chemicals. This was done using two criteria (1. Hit in AR assay, 2. deltaAC50 
-                        from AR assay to cell viability assay > 1). Prior to constructing this app, final hit calls were mapped with chemical structural indicators, called chemotypes. This was done for all chemicals tested with available chemotype 
-                        information (113/128). This dataset is what will be used for chemotype modeling and can be explored in the Data tab within the Modeling page (to note, there are 729 possible chemotype predictors, most chemicals are comprised of
-                         fewer than 15)."),
+                        were established using a 4*bmad threshold, shown on the plot. Final hit calls were made to distinguish AR specific chemicals from purely cytotoxic chemicals. This was done using two criteria: 1. Hit in AR assay, 2. deltaAC50 
+                        from AR assay to cell viability assay > 1. Prior to constructing this app, final hit calls were mapped with chemical structural indicators, called chemotypes. This was done for all chemicals tested with available chemotype 
+                        information (113/128). This dataset is what is used for chemotype modeling and can be explored in the Data tab within the Modeling page (to note, there are 729 possible chemotype predictors, most chemicals are comprised of
+                         fewer than 15 - the Low-Dimension Data set contains only the 19 most common chemotypes for fitting the glm model)."),
                       p("The Modeling page implements the chemotype-hitcall dataset to predict hits in the AR2 assay. The goal of this page is two-fold. 
-                        First, you'll be able to visualize through variable importance plots which variables were most important to predicting AR hits. Knowing which chemotypes are responsible for AR antagonist activity would be particularly useful 
-                        when looking at future chemicals to flag for further investigation. Second, this page attempts to allow the user to input a specific chemotype and allow the model to predict that chemotype for AR toxicity. Most chemicals are comprised 
-                        of a handful of chemotypes, and while it would be desirable to allow for the functionality of inputting a chemical and returning a hit call prediction, chemotyping software is complex and not readily linkable with code in R. As a result, 
-                        users will not be able to input a chemical, but functionality has been created to allow for you to select a single chemotype to predict hit calls for chemicals containing that feature."),
+                        First, you'll be able to visualize which model is the best at predicting on the training set through measure of accuracy, then look at a variable importance plot to see which variables were most important to predicting AR hits. 
+                        Knowing which chemotypes are responsible for AR antagonist activity would be particularly useful 
+                        when looking at future chemicals to flag for further investigation. Second, this page allows you to view prediction of hitcall for 5 untested chemicals. Most chemicals are only comprised 
+                        of a handful of chemotypes, and while it would be desirable to allow for the functionality of inputting any untested chemical and returning a hit call prediction, chemotyping software is complex and not readily linkable with code in R. As a result, 
+                        users will only be able to predict the 5 chemicals chemotyped and prepared for prediction. However, with the prediction, you will be able to visualize chemical structure and 
+                        if you are extremely familiar with organic chemistry, could compare important chemotypes to the structure displayed to make an educated guess on what the prediction will be (goodluck!)."),
                       
                       h3(strong("Note on Biogroups and Assay Specifics")),
-                      p("Throughout this app, you will be able to sort data and view data based on biogroups. This assay was developed using the xenobiotic metabolism retrofit method (linked in sidebar). Xenobiotic metabolism is responsible for 
+                      p("Throughout this app, you will be able to sort and view data based on biogroups. This assay was developed using the xenobiotic metabolism retrofit method (linked in sidebar). Xenobiotic metabolism is responsible for 
                         rending toxic parent substances into less toxic (typically) metabolites and occurs mainly in your liver. There are over 50 enzymes in the human liver called Cytochrome p450 enzymes (cyp's) that contribute to this 
                         physiological process. In our assay, we make use of the 10 most prevelant human cyp's and this app gives you the functionality to filter based on each one or any combination of the 10. As you filter plots by cyp, 
                         you may be able to notice a shifted curve with some cyp's in comparison to the two controls, noRNA and Bgal. 
                         This is best observed by filtering the plots page to Chemical = Flutamide, and Biogroup = 1A2 and 2C19. There are 13 other Cyp-shifted chemicals in this set. To view plots for our AR assay control, 
                         filter the plots page to Chemical = BICAL. To view plots for our viability assay control, filter the plots page to Chemical = DCLN. Other interesting chemicals are Equilin with Cyp2C19, and Bisphenol A - one of the most well established 
-                        EDC that is banned from commerical use now (you'll see why). It should be noted that the chemicals tested here are part of an endocrine validation set that
+                        EDCs that is banned from commerical use now (you'll see why). It should be noted that the chemicals tested here are part of an endocrine validation set that
                          is enriched for pro and anti-endocrine function, meaning most chemicals will either be clearly positive or clearly negative, and were selected for just this purpose. As a result, some of the variable importance conlusions should be 
                         drawn carefully so as not to overgeneralize these results to a slew of unknown chemicals."),
                       br(),
@@ -170,12 +172,13 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                       mainPanel(tabsetPanel(type = "tabs",
                                             tabPanel("Modeling Info",
                                                      h3(strong("Overview")),
-                                                     h5("Welcome to the modeling page. Here, we will work with the chemotype-hitcall dataset from the AR2 validation set. If you would like to explore the data first, click on the Chemotype Data 
-                                                       tab and look around. 113 of our 128 chemicals tested were able to successfuly be chemotyped using specialized software. This data set was then mapped to the hit calls from the validation screen 
+                                                     p("Welcome to the modeling page. Here, we will work with the chemotype-hitcall dataset from the AR2 validation set. If you would like to explore the data first, click on the Chemotype Data 
+                                                       tab and look around. 113 of our 128 chemicals tested were able to successfully be chemotyped using specialized software. This data set was then mapped to the hit calls from the validation screen 
                                                        that is shown as hit's or non-hits in the Data Visualization page. Each chemotype is a unique predictor in this data set, and the response is binary (0 or 1). If a chemical has a certain chemotype, 
                                                        the value for that chemotype for that chemical is 1. Most chemicals have a handful of distinct features, but their total chemotype count is typically less than 15. As such, there will be several unsused 
                                                        predictors due to the limited number of chemicals. In the Chemotype Data tab, you will have to option to select and view only the predictors with a value for at least 1 chemical, and from there, you will also have 
-                                                       the ability to use either the full predictor list or the condensed predictor list to fit the models."),
+                                                       the ability to use either the full predictor list or the condensed predictor list to fit the tree-based models. Since generalize linear models require fewer predictors than observations, you'll be able to view and use the lower dimension 
+                                                       data set for fitting of that model. This data set includes just the 19 most common chemotypes. "),
                                                      br(),
                                                      h4(strong("Generalized Linear Models")),
                                                      p("A generalized linear model will be the first of three models fit to this data. These models allow for responses from non-normal distributions such as in logistic regression with data from a binomial distribution. 
@@ -191,16 +194,19 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                                      h4(strong("Classification Trees")),
                                                      p("A classification tree will be the second type of model fit to this data. The goal of classification trees is to classify group membership, where the most prevelant class is used as prediction. These types of models are 
                                                        advantageous in that they do not require normalization of data, and that missing values do not significantly affect the process of tree building. In addition, the concept is typically easy to understand and explain. However, 
-                                                       these models often require more time to train the model and increase complexity over other methods. Finally, sometimes small changes in the data can cause large shifts in tree structure, potentially resulting in instability."),
+                                                       these models often require more time to train the model and increase complexity over other methods. Additionally, small changes in the data can often cause large shifts in tree structure, potentially resulting in instability. Despite this, 
+                                                       using cross validation can typically improve the model. You'll be given the ability to tune the cross validation parameters in the Model Fitting tab."),
                                                      br(),
                                                      h4(strong("Random Forests")),
-                                                     p("Random forest are an extension of bagged tree modeling. Bagged tree models use bootstrap samples to fit several trees and average over all of those samples. By doing this, the model chosen is tuned to multiple resamples of 
+                                                     p("Random forest are an extension of bagged tree modeling, and are more complex than standard classification trees. Bagged tree models use bootstrap samples to fit several trees and average over all of those resamples. By doing this, the model chosen is tuned to multiple resamples of 
                                                        the data and thus generalizes better to give better prediction on new data than the single tree fit. In random forest models, this same approach is taken but instead of fitting each new tree 
                                                        with all the predictors, a random selection of only about 2/3 of predictors are used. This feature of random variable selection lends to an uncorrelated forest of decision trees. In comparison to a standard decision tree, 
-                                                       random forests are more complex and thus lose some interpretibality and require more computational time to fit, but their main advantage is a significantly improved prediction. Random forests also help reduce the risk of 
-                                                       overfitting and provide additional flexibility to make it easier to determine feature importance.")
+                                                       random forests are more complex and thus lose some interpretibality and require more computational time, but their primary advantage is a significantly improved prediction. Particularly in classification response, 
+                                                       random forests are very popular for predictive models. Random forests also help reduce the risk of 
+                                                       overfitting and provide additional flexibility to make it easier to determine feature importance. A variable importance plot can be visualized to see which predictors are most important to the fit, and are a good fit statistic to look at."),
                                                        
-                                                     
+                                                     br(),
+                                                     br()
                                                      
                                                      ),
                                             tabPanel("Model Fitting", 
@@ -220,10 +226,10 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                                      
                                                      
                                                      mainPanel(
-                                                       
+                                                       h3(strong("Model Fit Statistics")),
+                                                       br(),
                                                        h4(strong("Generalized Linear Model")),
-                                                       fluidPage(splitLayout(
-                                                       tableOutput("glm"))),
+                                                       tableOutput("glm"),
                                                        br(),
                                                        h4(strong("Classification Tree Model")),
                                                        tableOutput("basictreeData"),
@@ -238,7 +244,7 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                             tabPanel("Prediction",
                                                      sidebarLayout(sidebarPanel(
                                                        h4(strong("Prediction Overview")),
-                                                       p("In this tab, you'll be able to use a model to predict future hitcalls. As a result of chemotyping software being spohisticated and not readily linked with R, functionality of predicting your favorite chemical will not be included. However, I have provided a list of several chemotyped chemicals to chose from that were not included in this testing set. Click around to each chemical and look at their predicted hitcall for the AR2 assay."),
+                                                       p("In this tab, you'll be able to use a model to predict future hitcalls. As a result of chemotyping software being sophisticated and not readily linked with R, functionality of predicting your favorite chemical will not be included. However, I have provided a list of several chemotyped chemicals to chose from that were not included in this testing set. Click around to each chemical and look at their predicted hitcall for the AR2 assay."),
                                                       selectInput("predictChems", "Select Chemical to Predict", choices = c("2,6-Dichlorobenzonitrile"="1","Faslodex"="2","4,4'-((1H-1,2,4-triazol-1-yl)methylene)dibenzonitrile"="3","2,2,4,4,6,6,8,8-Octamethyl-1,3,5,7,2,4,6,8-tetraoxatetrasilocane"="4","Ronilan"='5')),
                                                       p(em("Tree based methods provide the best prediction of chemical hits. Both tree models have been optimized for use of prediction in this tab. Select the type of model you would like to predict with.")),
                                                       selectInput("modelpredict", "Select Model Type for Prediction", choices = c("Random Forest", "Classification Tree"), selected = "Random Forest"),
@@ -264,6 +270,7 @@ shinyUI(navbarPage("AR2 Assay Data App", theme = shinytheme("flatly"),
                                                        
                                                      )),
                                             tabPanel("Chemotype Data", 
+                                                     br(),
                                                      radioButtons("subsetChemos2", strong("Select Data to Display"), choices = c("Chemotypes Present in Chemical List", "Full Chemotype Dataset", "Low-Dimensional Dataset")),
                                                      verbatimTextOutput("displayChemos"),
                                                      dataTableOutput("hitsData")))))
